@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="docs/tools/build_docs.py">
+<meta name="source" content="maintenance.md sha256:87697cbc3634">
+<title>Wartung &amp; Administration · n8n-local</title>
+<style>
+:root{
+  --bg:#f7f8fa;--surface:#ffffff;--text:#1d2330;--muted:#556070;--border:#dfe3ea;
+  --accent:#2a5bd7;--accent-soft:#e9f0ff;--code-bg:#0f172a;--code-text:#e2e8f0;--code-head:#1e293b;
+  --inline-code:#eef1f6;--warn-bg:#fff5f2;--warn:#c2410c;--info-bg:#eef6ff;--info:#1d4ed8;
+  --row:#f9fafc;
+  --d-box:#ffffff;--d-stroke:#5b6b7f;--d-stroke-soft:#b3bdca;--d-region:#f3f5f8;--d-text:#1f2937;--d-muted:#4b5563;
+  --d-line:#475569;--d-halo:#f3f5f8;--d-acc:#2a5bd7;--d-acc-bg:#e9f0ff;--d-ok:#15803d;--d-ok-bg:#e7f7ee;
+  --d-bad:#b91c1c;--d-bad-bg:#fdecec;--d-net:#edf7f1;--d-net-stroke:#6aa287;--d-int:#f5effa;--d-int-stroke:#9a76b5;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1117;--surface:#161b22;--text:#e6e9ef;--muted:#9aa4b2;--border:#2a313c;
+  --accent:#7aa2ff;--accent-soft:#1b2640;--code-bg:#0b0f16;--code-head:#141a24;--inline-code:#222a36;
+  --warn-bg:#2a1a14;--warn:#fb923c;--info-bg:#132033;--info:#7aa2ff;--row:#1a2029;
+  --d-box:#1c232d;--d-stroke:#8b98a9;--d-stroke-soft:#3b4552;--d-region:#141a22;--d-text:#e6e9ef;--d-muted:#a6b0bd;
+  --d-line:#9aa6b6;--d-halo:#141a22;--d-acc:#7aa2ff;--d-acc-bg:#1b2640;--d-ok:#4ade80;--d-ok-bg:#12291c;
+  --d-bad:#f87171;--d-bad-bg:#2d1618;--d-net:#13211a;--d-net-stroke:#4f8a6d;--d-int:#1f1828;--d-int-stroke:#8e6fab;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1117;--surface:#161b22;--text:#e6e9ef;--muted:#9aa4b2;--border:#2a313c;
+  --accent:#7aa2ff;--accent-soft:#1b2640;--code-bg:#0b0f16;--code-head:#141a24;--inline-code:#222a36;
+  --warn-bg:#2a1a14;--warn:#fb923c;--info-bg:#132033;--info:#7aa2ff;--row:#1a2029;
+  --d-box:#1c232d;--d-stroke:#8b98a9;--d-stroke-soft:#3b4552;--d-region:#141a22;--d-text:#e6e9ef;--d-muted:#a6b0bd;
+  --d-line:#9aa6b6;--d-halo:#141a22;--d-acc:#7aa2ff;--d-acc-bg:#1b2640;--d-ok:#4ade80;--d-ok-bg:#12291c;
+  --d-bad:#f87171;--d-bad-bg:#2d1618;--d-net:#13211a;--d-net-stroke:#4f8a6d;--d-int:#1f1828;--d-int-stroke:#8e6fab;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+a{color:var(--accent);text-underline-offset:2px}
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);max-width:1400px;margin:0 auto}
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;padding:28px 20px 40px;border-right:1px solid var(--border);background:var(--surface)}
+.brand{font-weight:700;font-size:15px;letter-spacing:.01em;margin:0 0 4px}
+.brand-sub{color:var(--muted);font-size:13px;margin:0 0 22px}
+.nav-docs{list-style:none;margin:0 0 26px;padding:0;display:grid;gap:4px}
+.nav-docs a{display:block;padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--text)}
+.nav-docs a small{display:block;color:var(--muted);font-size:12.5px}
+.nav-docs a:hover{background:var(--row)}
+.nav-docs a[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.toc-title{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px;font-weight:600}
+.toc{list-style:none;margin:0;padding:0;font-size:14px}
+.toc li{margin:0}
+.toc a{display:block;padding:3px 0 3px 10px;border-left:2px solid transparent;color:var(--muted);text-decoration:none}
+.toc a:hover,.toc a.active{color:var(--text);border-left-color:var(--accent)}
+.toc .l3 a{padding-left:24px;font-size:13px}
+main{padding:40px 56px 80px;min-width:0}
+.page-head{border-bottom:1px solid var(--border);margin-bottom:28px;padding-bottom:20px}
+.eyebrow{color:var(--accent);font-weight:600;font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 6px}
+h1{font-size:2.1rem;line-height:1.2;margin:0 0 8px;text-wrap:balance}
+.meta{color:var(--muted);font-size:14px;margin:0}
+h2{font-size:1.5rem;line-height:1.3;margin:2.6em 0 .7em;padding-top:.4em;border-top:1px solid var(--border)}
+h2:first-of-type{border-top:0;margin-top:1.2em}
+h3{font-size:1.15rem;margin:2em 0 .6em}
+h2,h3{scroll-margin-top:16px}
+p,ul,ol{margin:0 0 1em}
+li{margin:.25em 0}
+ol>li::marker{font-weight:600;color:var(--accent)}
+code{font:0.88em/1.5 ui-monospace,"Cascadia Code",Consolas,monospace;background:var(--inline-code);padding:.12em .38em;border-radius:5px;overflow-wrap:anywhere}
+.code{margin:0 0 1.2em;border-radius:10px;overflow:hidden;background:var(--code-bg);border:1px solid var(--border)}
+.code-head{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:var(--code-head);color:#94a3b8;font-size:12px;font-weight:600;letter-spacing:.04em}
+.copy{background:transparent;border:1px solid #334155;color:#cbd5e1;border-radius:6px;font:inherit;padding:2px 10px;cursor:pointer}
+.copy:hover{border-color:#64748b}
+pre{margin:0;padding:14px 16px;overflow-x:auto}
+pre code{background:none;padding:0;color:var(--code-text);font-size:13.5px;line-height:1.6;white-space:pre;overflow-wrap:normal}
+.table-wrap{overflow-x:auto;margin:0 0 1.3em;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--row);font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td code{white-space:nowrap}
+.callout{margin:0 0 1.3em;padding:12px 16px 2px;border-radius:10px;border-left:4px solid var(--info);background:var(--info-bg)}
+.callout.warn{border-left-color:var(--warn);background:var(--warn-bg)}
+.callout.warn strong:first-child{color:var(--warn)}
+.callout.info strong:first-child{color:var(--info)}
+.diagram{margin:1.2em 0 1.8em;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--d-region)}
+.diagram-svg{display:block;width:100%;height:auto}
+.diagram figcaption{color:var(--muted);font-size:13px;text-align:center;margin-top:8px}
+.foot{margin-top:56px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:13px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px}
+.pager a{flex:1;border:1px solid var(--border);border-radius:10px;padding:12px 16px;text-decoration:none;background:var(--surface)}
+.pager a small{display:block;color:var(--muted)}
+.pager .next{text-align:right}
+.theme-toggle{margin-top:24px;background:var(--row);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
+.menu-btn{display:none}
+@media (max-width:960px){
+  .layout{display:block}
+  .sidebar{position:static;height:auto;border-right:0;border-bottom:1px solid var(--border);padding:16px}
+  .sidebar .toc-block{display:none}
+  .sidebar.open .toc-block{display:block}
+  .menu-btn{display:inline-block;margin:0 0 8px;background:var(--row);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;font:inherit;font-size:14px}
+  main{padding:24px 16px 60px}
+  h1{font-size:1.7rem}
+  .pager{flex-direction:column}
+}
+@media print{
+  body{background:#fff;color:#000;font-size:11pt}
+  .sidebar,.copy,.pager,.theme-toggle,.menu-btn{display:none!important}
+  .layout{display:block}
+  main{padding:0}
+  a{color:#000}
+  .code{border:1px solid #999;background:#fff}
+  .code-head{background:#eee;color:#333}
+  pre code{color:#000;white-space:pre-wrap}
+  .table-wrap{overflow:visible;border-color:#999}
+  h2{break-after:avoid;border-top-color:#999}
+  .diagram,table,.callout,.code{break-inside:avoid}
+  .diagram{background:#fff}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigation">
+  <p class="brand">n8n-local</p>
+  <p class="brand-sub">Lokale n8n-Installation mit PostgreSQL</p>
+  <button type="button" class="menu-btn" aria-label="Inhaltsverzeichnis ein-/ausblenden">Inhalt ☰</button>
+  <ul class="nav-docs"><li><a href="installation-guide.html">Installationsanleitung<small>Neuinstallation Schritt für Schritt</small></a></li><li><a href="architecture.html">Architektur<small>Aufbau, Updater, Sicherheit</small></a></li><li><a href="maintenance.html" aria-current="page">Wartung &amp; Administration<small>Betrieb, Backup, Restore, Updates</small></a></li></ul>
+  <div class="toc-block">
+    <p class="toc-title">Auf dieser Seite</p>
+    <ul class="toc"><li class="l2"><a href="#schnellreferenz">Schnellreferenz</a></li><li class="l2"><a href="#starten-und-stoppen-der-container">Starten und Stoppen der Container</a></li><li class="l2"><a href="#neustarten-der-infrastruktur">Neustarten der Infrastruktur</a></li><li class="l2"><a href="#anzeigen-der-logs">Anzeigen der Logs</a></li><li class="l2"><a href="#prüfen-der-postgresql-verbindung">Prüfen der PostgreSQL-Verbindung</a></li><li class="l2"><a href="#manuelles-backup">Manuelles Backup</a></li><li class="l3"><a href="#automatische-backups-optional">Automatische Backups (optional)</a></li><li class="l2"><a href="#manuelle-wiederherstellung">Manuelle Wiederherstellung</a></li><li class="l2"><a href="#manuelles-aktualisieren-von-n8n">Manuelles Aktualisieren von n8n</a></li><li class="l2"><a href="#manuelles-aktualisieren-von-postgresql">Manuelles Aktualisieren von PostgreSQL</a></li><li class="l2"><a href="#kontrolle-des-automatisierten-update-workflows">Kontrolle des automatisierten Update-Workflows</a></li><li class="l2"><a href="#fehleranalyse">Fehleranalyse</a></li><li class="l2"><a href="#speicherplatzverwaltung">Speicherplatzverwaltung</a></li><li class="l2"><a href="#wiederherstellung-nach-einem-systemausfall">Wiederherstellung nach einem Systemausfall</a></li><li class="l3"><a href="#szenario-a-docker-desktop-oder-wsl-defekt-projektordner-intakt">Szenario A: Docker Desktop oder WSL defekt, Projektordner intakt</a></li><li class="l3"><a href="#szenario-b-neuer-rechner-nur-eine-backup-kopie-vorhanden">Szenario B: Neuer Rechner, nur eine Backup-Kopie vorhanden</a></li><li class="l3"><a href="#szenario-c-env-verloren-volumes-intakt">Szenario C: .env verloren, Volumes intakt</a></li><li class="l2"><a href="#regelmäßige-wartung">Regelmäßige Wartung</a></li></ul>
+    <button type="button" class="theme-toggle">Hell / Dunkel</button>
+  </div>
+</nav>
+<main id="inhalt">
+<header class="page-head">
+  <p class="eyebrow">n8n-local Dokumentation</p>
+  <h1>Wartung und Administration: n8n-local</h1>
+  <p class="meta">Quelle: <code>docs/maintenance.md</code> · generiert mit <code>docs/tools/build_docs.py</code></p>
+</header>
+<p>Alle Befehle für <strong>Windows PowerShell</strong>, ausgeführt in <code>C:\Weiterbildung\docker\n8n-local</code>. Wenn die Ausführungsrichtlinie Skripte blockiert, die Wrapper mit <code>powershell -ExecutionPolicy Bypass -File .\scripts\&lt;name&gt;.ps1</code> aufrufen.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Dokument</th>
+<th>Inhalt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="installation-guide.md">Installationsanleitung</a></td>
+<td>Neuinstallation Schritt für Schritt</td>
+</tr>
+<tr>
+<td><a href="architecture.md">Architektur</a></td>
+<td>Aufbau, Netzwerke, Volumes, Updater, Sicherheitskonzept</td>
+</tr>
+<tr>
+<td><strong>Wartung und Administration</strong> (dieses Dokument)</td>
+<td>Betrieb, Backup, Restore, Updates, Fehleranalyse</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="schnellreferenz">Schnellreferenz</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Aufgabe</th>
+<th>Befehl</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Status</td>
+<td><code>docker compose ps</code></td>
+</tr>
+<tr>
+<td>Gesamtzustand prüfen</td>
+<td><code>.\scripts\health.ps1</code></td>
+</tr>
+<tr>
+<td>Starten / Stoppen</td>
+<td><code>docker compose up -d</code> / <code>docker compose stop</code></td>
+</tr>
+<tr>
+<td>Logs n8n</td>
+<td><code>docker logs n8n --tail 100 -f</code></td>
+</tr>
+<tr>
+<td>Backup</td>
+<td><code>.\scripts\backup.ps1</code></td>
+</tr>
+<tr>
+<td>Restore</td>
+<td><code>.\scripts\restore.ps1 -BackupDirectory .\backups\&lt;ordner&gt;</code></td>
+</tr>
+<tr>
+<td>Neue Version?</td>
+<td><code>.\scripts\check-version.ps1</code></td>
+</tr>
+<tr>
+<td>Manuelles Update</td>
+<td><code>.\scripts\update-n8n.ps1 -Version x.y.z</code></td>
+</tr>
+<tr>
+<td>Update-Protokoll</td>
+<td><code>Get-Content .\logs\updates.jsonl -Tail 3</code></td>
+</tr>
+<tr>
+<td>Prüfprotokoll Workflow</td>
+<td><code>Get-Content .\logs\version-checks.jsonl -Tail 5</code></td>
+</tr>
+<tr>
+<td>Updater-Log</td>
+<td><code>Get-Content .\logs\updater.log -Tail 50</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="starten-und-stoppen-der-container">Starten und Stoppen der Container</h2>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker compose up -d              # alles starten (postgres → volume-init → n8n)
+docker compose stop               # anhalten, Container bleiben erhalten
+docker compose stop n8n           # nur n8n anhalten (z. B. vor manuellen DB-Arbeiten)
+docker compose start              # angehaltene Container wieder starten
+docker compose down               # Container und Netzwerke entfernen; Volumes bleiben!
+</code></pre></div>
+<aside class="callout warn" role="note">
+<p><strong>Warnung:</strong> Niemals <code>docker compose down -v</code> ausführen. <code>-v</code> löscht alle Volumes und damit die gesamte Datenbank.</p>
+</aside>
+<p>Wegen <code>restart: unless-stopped</code> starten die Container nach einem Neustart von Docker Desktop oder Windows automatisch, sofern sie nicht vorher manuell gestoppt wurden.</p>
+<h2 id="neustarten-der-infrastruktur">Neustarten der Infrastruktur</h2>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker compose restart n8n        # nur n8n (z. B. nach Aktivieren eines Workflows per CLI)
+docker compose restart            # beide Container
+docker compose up -d --force-recreate n8n   # n8n neu erstellen, z. B. nach Änderung der docker-compose.yml
+</code></pre></div>
+<p>Host-Updater neu starten:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">Stop-ScheduledTask  -TaskName &#x27;n8n-local Host-Updater&#x27;
+Start-ScheduledTask -TaskName &#x27;n8n-local Host-Updater&#x27;
+Invoke-RestMethod http://127.0.0.1:5680/health
+</code></pre></div>
+<h2 id="anzeigen-der-logs">Anzeigen der Logs</h2>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker logs n8n --tail 100                 # letzte 100 Zeilen
+docker logs n8n -f                         # live (Strg+C beendet)
+docker logs postgres --since 1h
+docker compose logs --tail 50              # alle Services
+Get-Content .\logs\updater.log -Tail 50 -Wait   # Host-Updater live
+</code></pre></div>
+<p>Die Container-Logs werden automatisch rotiert (<code>json-file</code>, 10 MB × 5 Dateien pro Container).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Datei</th>
+<th>Inhalt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>logs\updater.log</code></td>
+<td>Textprotokoll aller Aktionen des Host-Updaters (inkl. abgelehnter Anfragen)</td>
+</tr>
+<tr>
+<td><code>logs\updates.jsonl</code></td>
+<td>ein JSON-Datensatz pro Update-Vorgang</td>
+</tr>
+<tr>
+<td><code>logs\version-checks.jsonl</code></td>
+<td>ein JSON-Datensatz pro Workflow-Lauf (Entscheidung, Versionen)</td>
+</tr>
+<tr>
+<td><code>logs\update-&lt;id&gt;.out</code></td>
+<td>Ausgabe des separaten Update-Prozesses</td>
+</tr>
+</tbody>
+</table></div>
+<p>Felder in <code>updates.jsonl</code>: <code>startedAt</code>, <code>finishedAt</code>, <code>durationSeconds</code>, <code>versionBefore</code>, <code>targetVersion</code>, <code>versionAfter</code>, <code>backup</code>, <code>backupStatus</code>, <code>health</code> (alle Checks), <code>status</code> (<code>success</code> / <code>aborted</code> / <code>rolled-back</code> / <code>rollback-failed</code>), <code>rollback</code>, <code>error</code>, <code>steps</code>, <code>requestedBy</code>.</p>
+<p>Übersicht als Tabelle:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">Get-Content .\logs\updates.jsonl | ConvertFrom-Json |
+  Select-Object startedAt, versionBefore, targetVersion, versionAfter, status, backupStatus, durationSeconds |
+  Format-Table -AutoSize
+</code></pre></div>
+<h2 id="prüfen-der-postgresql-verbindung">Prüfen der PostgreSQL-Verbindung</h2>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker exec postgres pg_isready -U n8n -d n8n -h 127.0.0.1
+docker exec postgres psql -U n8n -d n8n -c &quot;select version();&quot;
+docker exec postgres psql -U n8n -d n8n -c &quot;select count(*) as workflows from workflow_entity;&quot;
+docker exec -it postgres psql -U n8n -d n8n          # interaktive Konsole (\q beendet)
+# Verbindung aus Sicht von n8n:
+Invoke-WebRequest http://localhost:5678/healthz/readiness -UseBasicParsing | Select-Object StatusCode
+</code></pre></div>
+<h2 id="manuelles-backup">Manuelles Backup</h2>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">.\scripts\backup.ps1                  # Standard: n8n wird für ca. 10–30 s gestoppt (konsistent)
+.\scripts\backup.ps1 -Reason vor-umbau
+.\scripts\backup.ps1 -Online          # ohne Stopp (nur wenn keine Workflows laufen)
+</code></pre></div>
+<p>Ablauf: Speicherplatz prüfen → n8n stoppen → <code>pg_dump</code> + <code>pg_dumpall --globals-only</code> → Volumes archivieren → <code>.env</code> und <code>docker-compose.yml</code> kopieren → <code>manifest.json</code> mit SHA-256 schreiben → verifizieren → n8n starten → Aufbewahrung anwenden. Erfolgsmeldung: <code>&quot;verified&quot;: true</code>.</p>
+<p>Ein vorhandenes Backup prüfen:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">python .\updater\n8nctl.py verify .\backups\20261116-092806-manual
+</code></pre></div>
+<p>Aufbewahrung (in <code>.env</code>): Backups älter als <code>BACKUP_RETENTION_DAYS=30</code> Tage werden beim nächsten Backup gelöscht, die <code>BACKUP_KEEP_MIN=5</code> neuesten bleiben immer erhalten. Manuell anstoßen: <code>python .\updater\n8nctl.py prune</code>.</p>
+<aside class="callout warn" role="note">
+<p><strong>Warnung:</strong> Backups enthalten den Encryption Key. Kopien außerhalb des Rechners nur verschlüsselt ablegen, z. B. <code>7z a -t7z -mhe=on -p backup.7z .\backups\&lt;ordner&gt;</code>.</p>
+</aside>
+<h3 id="automatische-backups-optional">Automatische Backups (optional)</h3>
+<p>Ein tägliches Backup lässt sich per Aufgabenplanung einrichten:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">$a = New-ScheduledTaskAction -Execute &#x27;powershell.exe&#x27; `
+     -Argument &#x27;-NoProfile -ExecutionPolicy Bypass -File C:\Weiterbildung\docker\n8n-local\scripts\backup.ps1 -Reason daily&#x27;
+$t = New-ScheduledTaskTrigger -Daily -At 02:30
+Register-ScheduledTask -TaskName &#x27;n8n-local Backup&#x27; -Action $a -Trigger $t
+</code></pre></div>
+<p>Vor jedem automatischen Update erstellt der Host-Updater zusätzlich immer ein Backup <code>…-pre-update</code>.</p>
+<h2 id="manuelle-wiederherstellung">Manuelle Wiederherstellung</h2>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">Get-ChildItem .\backups -Directory | Sort-Object Name     # Backup auswählen
+.\scripts\restore.ps1 -BackupDirectory .\backups\20261116-092806-manual
+# Rückfrage mit &quot;ja&quot; bestätigen; -Force überspringt die Rückfrage
+</code></pre></div>
+<p>Ablauf: Hashes und Dump prüfen → Encryption Key vergleichen → Sicherheits-Backup <code>pre-restore</code> → <code>N8N_VERSION</code>/<code>POSTGRES_VERSION</code> aus dem Backup setzen → n8n stoppen → Volumes ersetzen → Datenbank neu anlegen und <code>pg_restore</code> → n8n starten → Healthchecks.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Parameter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Normaler Restore auf demselben Rechner</td>
+<td>keiner</td>
+</tr>
+<tr>
+<td><code>.env</code> fehlt oder Encryption Key unterscheidet sich</td>
+<td><code>-RestoreEnv</code> (übernimmt <code>env.backup</code>)</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="manuelles-aktualisieren-von-n8n">Manuelles Aktualisieren von n8n</h2>
+<p>Empfohlen über den Host-Updater: Vorabprüfung, Backup, Healthchecks und Rollback sind eingebaut.</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">.\scripts\check-version.ps1                              # installiert vs. neueste stabile Version
+.\scripts\update-n8n.ps1 -Version 2.47.8 -PreflightOnly  # nur prüfen
+.\scripts\update-n8n.ps1 -Version 2.47.8                 # Update mit Rückfrage
+.\scripts\update-n8n.ps1 -Version 3.0.1 -AllowMajor      # Major-Update (vorher Release Notes lesen!)
+</code></pre></div>
+<p>Bei Major-Updates zuerst die Release Notes und den Migrationsleitfaden von n8n lesen: <a href="https://docs.n8n.io/release-notes/">https://docs.n8n.io/release-notes/</a>.</p>
+<p>Komplett manuell, ohne Updater:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">.\scripts\backup.ps1 -Reason vor-update
+docker pull docker.n8n.io/n8nio/n8n:2.47.8
+(Get-Content .env) -replace &#x27;^N8N_VERSION=.*&#x27;, &#x27;N8N_VERSION=2.47.8&#x27; | Set-Content .env -Encoding ascii
+docker compose up -d --no-deps n8n
+.\scripts\health.ps1
+# Bei Fehler: .\scripts\restore.ps1 -BackupDirectory .\backups\&lt;vor-update-ordner&gt; -Force
+</code></pre></div>
+<h2 id="manuelles-aktualisieren-von-postgresql">Manuelles Aktualisieren von PostgreSQL</h2>
+<p><strong>Minor-Update</strong> (z. B. 17.12 → 17.13, gleiche Datenformate):</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">.\scripts\backup.ps1 -Reason vor-pg-update
+(Get-Content .env) -replace &#x27;^POSTGRES_VERSION=.*&#x27;, &#x27;POSTGRES_VERSION=17.13&#x27; | Set-Content .env -Encoding ascii
+docker compose pull postgres
+docker compose up -d postgres
+.\scripts\health.ps1
+</code></pre></div>
+<p><strong>Major-Update</strong> (z. B. 17 → 18): Das Datenverzeichnis ist nicht kompatibel. Vorgehen per Dump und Restore:</p>
+<ol>
+<li><code>.\scripts\backup.ps1 -Reason vor-pg-major</code> ausführen und den Backup-Ordner notieren.</li>
+<li><code>docker compose down</code> ausführen und das alte Volume umbenennen bzw. sichern. Es bleibt als Fallback erhalten:
+<code>docker volume create n8n-local_postgres_data_pg17</code> und die Daten per <code>docker run --rm -v n8n-local_postgres_data:/from -v n8n-local_postgres_data_pg17:/to alpine:3.22 sh -c &quot;cp -a /from/. /to/&quot;</code> kopieren.</li>
+<li><code>docker volume rm n8n-local_postgres_data</code> ausführen.</li>
+<li><code>POSTGRES_VERSION</code> in <code>.env</code> anpassen. <strong>Ab PostgreSQL 18</strong> in <code>docker-compose.yml</code> <code>PGDATA</code> entfernen und das Volume auf <code>/var/lib/postgresql</code> mounten (geänderte Konvention des offiziellen Images).</li>
+<li><code>docker compose up -d postgres</code>, danach <code>.\scripts\restore.ps1 -BackupDirectory .\backups\&lt;ordner&gt; -Force</code>.</li>
+<li><code>.\scripts\health.ps1</code> ausführen und die Daten prüfen.</li>
+</ol>
+<h2 id="kontrolle-des-automatisierten-update-workflows">Kontrolle des automatisierten Update-Workflows</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Prüfung</th>
+<th>Befehl / Ort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workflow aktiv?</td>
+<td><code>docker exec postgres psql -U n8n -d n8n -tAc &quot;select name, active from workflow_entity where id='weeklyN8nUpdater'&quot;</code> → <code>t</code></td>
+</tr>
+<tr>
+<td>Letzte Ausführungen</td>
+<td>UI: <strong>Overview → Executions</strong> bzw. Workflow → <strong>Executions</strong></td>
+</tr>
+<tr>
+<td>Letzte Entscheidungen</td>
+<td><code>Get-Content .\logs\version-checks.jsonl -Tail 5</code></td>
+</tr>
+<tr>
+<td>Letzte Updates</td>
+<td><code>Get-Content .\logs\updates.jsonl -Tail 1 | ConvertFrom-Json</code></td>
+</tr>
+<tr>
+<td>Updater läuft?</td>
+<td><code>Invoke-RestMethod http://127.0.0.1:5680/health</code></td>
+</tr>
+<tr>
+<td>Updater-Status mit Auth</td>
+<td>siehe unten</td>
+</tr>
+<tr>
+<td>Manuell ausführen</td>
+<td><code>docker exec -e N8N_RUNNERS_BROKER_PORT=5690 n8n n8n execute --id=weeklyN8nUpdater --rawOutput</code></td>
+</tr>
+</tbody>
+</table></div>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">$token = (Select-String -Path .env -Pattern &#x27;^UPDATER_TOKEN=(.+)$&#x27;).Matches[0].Groups[1].Value
+Invoke-RestMethod http://127.0.0.1:5680/status -Headers @{ Authorization = &quot;Bearer $token&quot; } | ConvertTo-Json -Depth 5
+# Dry-Run einer Zielversion, ohne Änderung:
+Invoke-RestMethod http://127.0.0.1:5680/update -Method Post -ContentType &#x27;application/json&#x27; `
+  -Headers @{ Authorization = &quot;Bearer $token&quot; } -Body &#x27;{&quot;version&quot;:&quot;2.47.7&quot;,&quot;dryRun&quot;:true}&#x27;
+</code></pre></div>
+<p><strong>Zeitplan ändern:</strong> In der UI den Knoten „Montag 03:00 (Europe/Berlin)“ öffnen und Wochentag/Uhrzeit anpassen. Den Knoten passend umbenennen, <strong>Publish</strong> klicken und den Export <code>workflows/weekly-n8n-update.json</code> aktualisieren (Workflow-Menü → Download). Die Zeitzone kommt aus den Workflow-Einstellungen (<code>Europe/Berlin</code>) und aus <code>GENERIC_TIMEZONE</code>.</p>
+<p><strong>Rollback-Pfad testen</strong>, ohne die Version zu wechseln:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">python .\updater\n8nctl.py update 2.47.7 --yes --simulate-failure
+# erwartet: status &quot;rolled-back&quot;, rollback.ok = true
+</code></pre></div>
+<p><strong>Workflow deaktivieren:</strong> <code>docker exec n8n n8n unpublish:workflow --id=weeklyN8nUpdater</code> und danach <code>docker compose restart n8n</code>.</p>
+<h2 id="fehleranalyse">Fehleranalyse</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Ursache / Prüfung</th>
+<th>Lösung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docker</code> antwortet nur mit Client</td>
+<td>Docker Desktop läuft nicht</td>
+<td>Docker Desktop starten</td>
+</tr>
+<tr>
+<td>n8n bleibt <code>starting</code>/<code>unhealthy</code></td>
+<td><code>docker logs n8n --tail 100</code></td>
+<td>DB-Fehler: <code>docker compose ps postgres</code> prüfen</td>
+</tr>
+<tr>
+<td><code>password authentication failed</code></td>
+<td><code>POSTGRES_PASSWORD</code> in <code>.env</code> geändert</td>
+<td>ursprüngliches Passwort wiederherstellen (aus <code>backups\*\env.backup</code>)</td>
+</tr>
+<tr>
+<td>Credentials „could not be decrypted“</td>
+<td>falscher <code>N8N_ENCRYPTION_KEY</code></td>
+<td>Key aus dem Backup (<code>env.backup</code>) wiederherstellen</td>
+</tr>
+<tr>
+<td>Port 5678 belegt</td>
+<td><code>netstat -ano | Select-String ':5678 '</code></td>
+<td>Fremdprozess beenden oder <code>N8N_PORT</code> ändern</td>
+</tr>
+<tr>
+<td>Workflow: „Installierte Version ermitteln“ schlägt fehl</td>
+<td>Updater läuft nicht / Token falsch</td>
+<td><code>Start-ScheduledTask 'n8n-local Host-Updater'</code>; Credential prüfen</td>
+</tr>
+<tr>
+<td>Workflow: <code>decision=blocked</code></td>
+<td>Vorabprüfung, siehe <code>reason</code></td>
+<td>z. B. Speicherplatz freigeben, Healthchecks reparieren</td>
+</tr>
+<tr>
+<td><code>updates.jsonl</code>: <code>aborted</code></td>
+<td>Backup oder Vorabprüfung fehlgeschlagen, <strong>nichts geändert</strong></td>
+<td><code>error</code> lesen, Ursache beheben</td>
+</tr>
+<tr>
+<td><code>updates.jsonl</code>: <code>rolled-back</code></td>
+<td>neue Version nicht gesund, alter Stand wiederhergestellt</td>
+<td><code>health.checks</code> lesen, Release Notes prüfen, später erneut</td>
+</tr>
+<tr>
+<td><code>updates.jsonl</code>: <code>rollback-failed</code></td>
+<td><strong>kritisch</strong></td>
+<td><code>logs\updater.log</code> lesen, manuell <code>restore.ps1</code> mit dem <code>pre-update</code>-Backup</td>
+</tr>
+<tr>
+<td>Update-Sperre hängt</td>
+<td><code>updater\state\update.lock</code> existiert ohne laufenden Prozess</td>
+<td>wird nach 3 h automatisch entfernt; sonst Datei löschen</td>
+</tr>
+<tr>
+<td><code>Task Broker's port 5679 is already in use</code> bei <code>n8n execute</code></td>
+<td>n8n läuft bereits</td>
+<td><code>-e N8N_RUNNERS_BROKER_PORT=5690</code> angeben</td>
+</tr>
+</tbody>
+</table></div>
+<p>Diagnosepaket:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">.\scripts\health.ps1
+docker compose ps
+docker inspect n8n --format &#x27;{{json .State.Health}}&#x27; | ConvertFrom-Json | Select-Object -ExpandProperty Log | Select-Object -Last 3
+Get-Content .\logs\updater.log -Tail 30
+</code></pre></div>
+<h2 id="speicherplatzverwaltung">Speicherplatzverwaltung</h2>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker system df                       # Images, Container, Volumes, Build-Cache
+docker system df -v | Select-String &#x27;n8n-local&#x27;
+Get-ChildItem .\backups -Directory | ForEach-Object {
+  [pscustomobject]@{ Name = $_.Name; MB = [math]::Round((Get-ChildItem $_.FullName -Recurse | Measure-Object Length -Sum).Sum / 1MB, 1) } }
+python .\updater\n8nctl.py prune       # Aufbewahrungsregel anwenden
+docker image prune                     # ungenutzte, unbenannte Images entfernen
+docker image rm docker.n8n.io/n8nio/n8n:&lt;alte-version&gt;   # alte n8n-Images (nicht die aktuelle!)
+</code></pre></div>
+<ul>
+<li>Ausführungsdaten werden durch <code>EXECUTIONS_DATA_PRUNE=true</code> nach 14 Tagen (<code>EXECUTIONS_DATA_MAX_AGE=336</code> h) gelöscht.</li>
+<li>Die WSL-Disk von Docker Desktop schrumpft nicht automatisch: Docker Desktop → <strong>Settings → Resources → Disk image size</strong> bzw. <strong>Troubleshoot → Clean / Purge data</strong> (Vorsicht: „Purge“ löscht Volumes).</li>
+<li>Backup und Update verweigern den Start, wenn weniger als 2 × Volumegröße + <code>MIN_FREE_GB</code> frei ist.</li>
+</ul>
+<h2 id="wiederherstellung-nach-einem-systemausfall">Wiederherstellung nach einem Systemausfall</h2>
+<h3 id="szenario-a-docker-desktop-oder-wsl-defekt-projektordner-intakt">Szenario A: Docker Desktop oder WSL defekt, Projektordner intakt</h3>
+<ol>
+<li>Docker Desktop neu installieren (siehe <a href="installation-guide.md#2-docker-installation">Installationsanleitung</a>).</li>
+<li>Sind die Volumes noch vorhanden (<code>docker volume ls</code>), genügt <code>docker compose up -d</code>.</li>
+<li>Fehlen sie: <code>docker compose up -d postgres</code>, dann <code>.\scripts\restore.ps1 -BackupDirectory .\backups\&lt;neuestes&gt; -Force</code>.</li>
+</ol>
+<h3 id="szenario-b-neuer-rechner-nur-eine-backup-kopie-vorhanden">Szenario B: Neuer Rechner, nur eine Backup-Kopie vorhanden</h3>
+<ol>
+<li>Docker Desktop, Git und Python installieren.</li>
+<li>Projekt aus Git klonen oder kopieren (ohne <code>.env</code>).</li>
+<li>Den Backup-Ordner nach <code>backups\</code> kopieren und entschlüsseln.</li>
+<li><code>.env</code> aus dem Backup übernehmen: <code>Copy-Item .\backups\&lt;ordner&gt;\env.backup .env</code>.</li>
+<li><code>docker compose pull</code>, danach <code>docker compose up -d postgres</code>.</li>
+<li><code>.\scripts\restore.ps1 -BackupDirectory .\backups\&lt;ordner&gt; -RestoreEnv -Force</code>.</li>
+<li><code>.\scripts\install-updater-task.ps1</code>, danach <code>.\scripts\health.ps1</code>.</li>
+<li>Anmeldung in der UI mit dem bisherigen Konto. Workflows, Credentials und der Update-Workflow sind wiederhergestellt.</li>
+</ol>
+<h3 id="szenario-c-env-verloren-volumes-intakt">Szenario C: <code>.env</code> verloren, Volumes intakt</h3>
+<p><code>env.backup</code> aus dem neuesten Backup nach <code>.env</code> kopieren. Ohne Backup lässt sich der <code>N8N_ENCRYPTION_KEY</code> nur aus <code>/home/node/.n8n/config</code> im Volume <code>n8n_data</code> lesen (<code>docker run --rm -v n8n-local_n8n_data:/d alpine:3.22 cat /d/config</code>), falls n8n ihn dort gespeichert hat. Gespeicherte Credentials sind ohne Key verloren.</p>
+<h2 id="regelmäßige-wartung">Regelmäßige Wartung</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Intervall</th>
+<th>Aufgabe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>wöchentlich (automatisch)</td>
+<td>Versionsprüfung und ggf. Update (Montag 03:00)</td>
+</tr>
+<tr>
+<td>wöchentlich</td>
+<td><code>logs\version-checks.jsonl</code> und <code>logs\updates.jsonl</code> kurz prüfen</td>
+</tr>
+<tr>
+<td>monatlich</td>
+<td><code>.\scripts\backup.ps1</code> und eine verschlüsselte Kopie außer Haus</td>
+</tr>
+<tr>
+<td>quartalsweise</td>
+<td>Restore-Test auf Testbasis; Docker Desktop aktualisieren</td>
+</tr>
+<tr>
+<td>bei Major-Release von n8n</td>
+<td>Release Notes lesen, manuell mit <code>-AllowMajor</code> aktualisieren</td>
+</tr>
+</tbody>
+</table></div>
+
+<div class="pager"><a class="prev" href="architecture.html"><small>← Zurück</small>Architektur</a></div>
+<footer class="foot">Generiert aus <code>maintenance.md</code> (SHA-256 87697cbc3634). Nicht von Hand bearbeiten – Änderungen in der Markdown-Datei vornehmen und den Generator ausführen.</footer>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement,key='n8n-docs-theme';
+  try{var t=localStorage.getItem(key);if(t)root.setAttribute('data-theme',t);}catch(e){}
+  document.addEventListener('click',function(ev){
+    var b=ev.target.closest('.copy');
+    if(b){var code=b.closest('.code').querySelector('code').innerText;
+      (navigator.clipboard?navigator.clipboard.writeText(code):Promise.reject()).then(function(){b.textContent='Kopiert';setTimeout(function(){b.textContent='Kopieren'},1500)},function(){b.textContent='Markieren + Strg+C'});}
+    if(ev.target.closest('.theme-toggle')){
+      var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+      var next=dark?'light':'dark';root.setAttribute('data-theme',next);try{localStorage.setItem(key,next);}catch(e){}
+    }
+    if(ev.target.closest('.menu-btn')){document.querySelector('.sidebar').classList.toggle('open');}
+  });
+  var links=[].slice.call(document.querySelectorAll('.toc a'));
+  if('IntersectionObserver' in window&&links.length){
+    var map={};links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+    var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(l){l.classList.remove('active')});var a=map[e.target.id];if(a)a.classList.add('active');}});},{rootMargin:'0px 0px -75% 0px'});
+    document.querySelectorAll('main h2[id],main h3[id]').forEach(function(h){obs.observe(h);});
+  }
+})();
+</script>
+</body>
+</html>

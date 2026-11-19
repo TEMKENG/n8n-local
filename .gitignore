@@ -1,0 +1,18 @@
+# Geheimnisse
+.env
+*.env.bak
+# Backups enthalten Datenbank-Dumps und den Encryption Key
+backups/**
+!backups/.gitkeep
+# Laufzeitdaten des Updaters
+logs/**
+!logs/.gitkeep
+updater/state/**
+!updater/state/.gitkeep
+__pycache__/
+*.pyc
+*.tmp
+*.zip
+*.dump
+*.tar.gz
+.playwright-mcp/

@@ -1,0 +1,465 @@
+{
+  "id": "weeklyN8nUpdater",
+  "name": "Weekly n8n Version Checker & Auto Updater",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1,
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 3,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "a1000000-0000-4000-8000-000000000001",
+      "name": "Montag 03:00 (Europe/Berlin)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "a1000000-0000-4000-8000-000000000002",
+      "name": "Manueller Test",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://host.docker.internal:5680/status",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "a1000000-0000-4000-8000-000000000003",
+      "name": "Installierte Version ermitteln",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        100
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "hostUpdaterCred1",
+          "name": "n8n Host Updater Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/n8n-io/n8n/releases?per_page=100",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "User-Agent",
+              "value": "n8n-local-version-check"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "a1000000-0000-4000-8000-000000000004",
+      "name": "Stabile Releases von GitHub abrufen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        100
+      ],
+      "onError": "continueErrorOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Vergleicht installierte und verfuegbare n8n-Versionen (Semantic Versioning).\n// Quelle: offizielle GitHub-Releases von n8n-io/n8n. Vorabversionen werden verworfen.\nconst status = $('Installierte Version ermitteln').first().json;\nconst installed = status.runningVersion || status.configuredVersion;\nconst SEMVER = /^(\\d+)\\.(\\d+)\\.(\\d+)$/;\nconst parse = (v) => {\n  const m = SEMVER.exec(v || '');\n  if (!m) throw new Error('Ungueltige Version: ' + v);\n  return m.slice(1).map(Number);\n};\nconst cmp = (a, b) => {\n  const x = parse(a), y = parse(b);\n  for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] - y[i];\n  return 0;\n};\n\nconst releases = $input.all().map((i) => i.json);\nconst stable = releases\n  .filter((r) => !r.draft && !r.prerelease && /^n8n@\\d+\\.\\d+\\.\\d+$/.test(r.tag_name || ''))\n  .map((r) => ({ version: r.tag_name.slice(4), url: r.html_url, publishedAt: r.published_at, body: r.body || '' }))\n  .sort((a, b) => cmp(b.version, a.version));\nif (!stable.length) throw new Error('GitHub lieferte keine stabile n8n-Version');\n\nconst major = parse(installed)[0];\nconst latestOverall = stable[0];\nconst latestSameMajor = stable.find((r) => parse(r.version)[0] === major) || null;\n\nlet decision = 'none';\nlet reason = 'Installierte Version ' + installed + ' ist aktuell';\nlet target = null;\nlet release = null;\n\nif (status.updateInProgress) {\n  decision = 'skip';\n  reason = 'Ein Update laeuft bereits';\n} else if (status.configuredVersion !== status.runningVersion) {\n  decision = 'blocked';\n  reason = 'Konfigurierte (' + status.configuredVersion + ') und laufende (' + status.runningVersion + ') Version weichen ab';\n} else if (latestSameMajor && cmp(latestSameMajor.version, installed) > 0) {\n  target = latestSameMajor.version;\n  release = latestSameMajor;\n  if (/breaking change/i.test(release.body)) {\n    decision = 'manual';\n    reason = 'Release Notes von ' + target + ' melden Breaking Changes - manuelles Update erforderlich';\n  } else {\n    decision = 'update';\n    reason = 'Neue stabile Version ' + target + ' verfuegbar';\n  }\n} else if (cmp(latestOverall.version, installed) > 0) {\n  target = latestOverall.version;\n  release = latestOverall;\n  decision = 'manual';\n  reason = 'Neue Major-Version ' + target + ' verfuegbar - manuelles Update erforderlich';\n}\n\nreturn [{ json: {\n  checkedAt: new Date().toISOString(),\n  installedVersion: installed,\n  availableVersion: latestOverall.version,\n  latestSameMajor: latestSameMajor ? latestSameMajor.version : null,\n  targetVersion: target,\n  decision,\n  reason,\n  releaseUrl: release ? release.url : latestOverall.url,\n  releasePublishedAt: release ? release.publishedAt : latestOverall.publishedAt,\n  releaseNotesExcerpt: release ? release.body.slice(0, 1500) : '',\n  lastUpdateStatus: status.lastUpdate ? status.lastUpdate.status + ' ' + (status.lastUpdate.targetVersion || '') : 'none',\n  stableVersionsSeen: stable.slice(0, 10).map((r) => r.version),\n} }];"
+      },
+      "id": "a1000000-0000-4000-8000-000000000005",
+      "name": "Versionen vergleichen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// GitHub-Abfrage fehlgeschlagen: Fehler protokollieren, kein Update.\nconst clean = (s) => String(s ?? '').replace(/[^\\p{L}\\p{N}_ .,:;\\/@()+#=?&%-]/gu, ' ').slice(0, 300);\nconst status = $('Installierte Version ermitteln').first().json;\nconst err = $input.first().json.error || $input.first().json;\nreturn [{ json: {\n  checkedAt: new Date().toISOString(),\n  trigger: $('Montag 03:00 (Europe/Berlin)').isExecuted ? 'schedule' : 'manual',\n  executionId: String($execution.id),\n  installedVersion: status.runningVersion || status.configuredVersion,\n  decision: 'error',\n  reason: 'Versionsabfrage bei GitHub fehlgeschlagen',\n  updateRequested: false,\n  error: clean(typeof err === 'string' ? err : (err.message || JSON.stringify(err))),\n} }];"
+      },
+      "id": "a1000000-0000-4000-8000-000000000006",
+      "name": "Fehler aufbereiten",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a1000000-0000-4000-8000-000000000007-c",
+              "leftValue": "={{ $json.decision }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "update"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000007",
+      "name": "Neue Version verfuegbar?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5680/update",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 180000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ version: $json.targetVersion, dryRun: true, requestedBy: 'n8n-weekly-workflow', executionId: String($execution.id) }) }}"
+      },
+      "id": "a1000000-0000-4000-8000-000000000008",
+      "name": "Vorabpruefung (Dry-Run)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        -100
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "hostUpdaterCred1",
+          "name": "n8n Host Updater Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a1000000-0000-4000-8000-000000000009-c",
+              "leftValue": "={{ $json.statusCode === 200 && $json.body.ok === true }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000009",
+      "name": "Vorabpruefung bestanden?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1440,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5680/update",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 180000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ version: $('Versionen vergleichen').first().json.targetVersion, requestedBy: 'n8n-weekly-workflow', executionId: String($execution.id) }) }}"
+      },
+      "id": "a1000000-0000-4000-8000-000000000010",
+      "name": "Update beim Host-Updater anfordern",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        -200
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "hostUpdaterCred1",
+          "name": "n8n Host Updater Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Fasst das Ergebnis aller Pfade zu einem Protokolleintrag zusammen.\nconst clean = (s) => String(s ?? '').replace(/[^\\p{L}\\p{N}_ .,:;\\/@()+#=?&%-]/gu, ' ').slice(0, 300);\nconst cmp = $('Versionen vergleichen').first().json;\nlet decision = cmp.decision;\nlet reason = cmp.reason;\nlet updateRequested = false;\nlet error = '';\n\nif ($('Vorabpruefung (Dry-Run)').isExecuted) {\n  const pf = $('Vorabpruefung (Dry-Run)').first().json;\n  const body = pf.body || {};\n  if (pf.statusCode !== 200 || body.ok !== true) {\n    decision = 'blocked';\n    reason = 'Vorabpruefung fehlgeschlagen: ' + ((body.failed || []).join(', ') || body.error || ('HTTP ' + pf.statusCode));\n  }\n}\nif ($('Update beim Host-Updater anfordern').isExecuted) {\n  const r = $('Update beim Host-Updater anfordern').first().json;\n  const body = r.body || {};\n  if (r.statusCode === 202 && body.accepted === true) {\n    updateRequested = true;\n    reason = 'Update auf ' + body.targetVersion + ' angenommen (requestId ' + body.requestId + '). Backup, Installation, Healthchecks und ggf. Rollback laufen auf dem Host.';\n  } else {\n    decision = 'error';\n    error = 'Updater HTTP ' + r.statusCode + ': ' + JSON.stringify(body);\n  }\n}\n\nreturn [{ json: {\n  checkedAt: cmp.checkedAt,\n  trigger: $('Montag 03:00 (Europe/Berlin)').isExecuted ? 'schedule' : 'manual',\n  executionId: String($execution.id),\n  installedVersion: cmp.installedVersion,\n  availableVersion: cmp.availableVersion,\n  targetVersion: cmp.targetVersion || '',\n  decision,\n  reason: clean(reason),\n  updateRequested,\n  error: clean(error),\n  releaseUrl: clean(cmp.releaseUrl),\n  lastUpdateStatus: clean(cmp.lastUpdateStatus),\n} }];"
+      },
+      "id": "a1000000-0000-4000-8000-000000000011",
+      "name": "Protokolleintrag erstellen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5680/check-log",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 30000
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}"
+      },
+      "id": "a1000000-0000-4000-8000-000000000012",
+      "name": "Ergebnis protokollieren",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2160,
+        100
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "hostUpdaterCred1",
+          "name": "n8n Host Updater Token"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Montag 03:00 (Europe/Berlin)": {
+      "main": [
+        [
+          {
+            "node": "Installierte Version ermitteln",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manueller Test": {
+      "main": [
+        [
+          {
+            "node": "Installierte Version ermitteln",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Installierte Version ermitteln": {
+      "main": [
+        [
+          {
+            "node": "Stabile Releases von GitHub abrufen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stabile Releases von GitHub abrufen": {
+      "main": [
+        [
+          {
+            "node": "Versionen vergleichen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fehler aufbereiten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Versionen vergleichen": {
+      "main": [
+        [
+          {
+            "node": "Neue Version verfuegbar?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Neue Version verfuegbar?": {
+      "main": [
+        [
+          {
+            "node": "Vorabpruefung (Dry-Run)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Protokolleintrag erstellen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vorabpruefung (Dry-Run)": {
+      "main": [
+        [
+          {
+            "node": "Vorabpruefung bestanden?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vorabpruefung bestanden?": {
+      "main": [
+        [
+          {
+            "node": "Update beim Host-Updater anfordern",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Protokolleintrag erstellen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update beim Host-Updater anfordern": {
+      "main": [
+        [
+          {
+            "node": "Protokolleintrag erstellen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Protokolleintrag erstellen": {
+      "main": [
+        [
+          {
+            "node": "Ergebnis protokollieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fehler aufbereiten": {
+      "main": [
+        [
+          {
+            "node": "Ergebnis protokollieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "timezone": "Europe/Berlin",
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all",
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "pinData": {},
+  "active": false,
+  "versionId": "b2000000-0000-4000-8000-000000000001",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "note": "Credential 'n8n Host Updater Token' (Header Auth) wird separat angelegt; dieser Export enthaelt keine Geheimnisse."
+  },
+  "tags": []
+}

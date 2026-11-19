@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" role="img" aria-labelledby="flow-t flow-d" class="diagram-svg"><title id="flow-t">Datenfluss</title><desc id="flow-d">Browser spricht mit n8n; n8n speichert in PostgreSQL und in den Volumes; Credentials verschlüsselt.</desc>
+<style>
+.bx{fill:var(--d-box,#fff);stroke:var(--d-stroke,#5b6b7f);stroke-width:1.4}
+.bx.acc{fill:var(--d-acc-bg,#e8f1ff);stroke:var(--d-acc,#2563eb);stroke-width:1.8}
+.bx.ok{fill:var(--d-ok-bg,#e7f7ee);stroke:var(--d-ok,#15803d)}
+.bx.bad{fill:var(--d-bad-bg,#fdecec);stroke:var(--d-bad,#b91c1c)}
+.bx.dash{stroke-dasharray:5 4}
+.rg{fill:var(--d-region,#f4f6f9);stroke:var(--d-stroke-soft,#a9b4c2);stroke-width:1.2}
+.rg.net{fill:var(--d-net,#eef6f1);stroke:var(--d-net-stroke,#6aa287);stroke-dasharray:6 4}
+.rg.int{fill:var(--d-int,#f6effa);stroke:var(--d-int-stroke,#9a76b5);stroke-dasharray:6 4}
+.t{fill:var(--d-text,#1f2937);font:600 14px system-ui,-apple-system,"Segoe UI",sans-serif}
+.s{fill:var(--d-muted,#4b5563);font:12.5px system-ui,-apple-system,"Segoe UI",sans-serif}
+.rt{fill:var(--d-muted,#4b5563);font:600 12.5px system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.02em}
+.lb{fill:var(--d-text,#1f2937);font:12px system-ui,-apple-system,"Segoe UI",sans-serif;paint-order:stroke;stroke:var(--d-halo,#fff);stroke-width:4px;stroke-linejoin:round}
+.ln{fill:none;stroke:var(--d-line,#475569);stroke-width:1.6}
+.ln.dash{stroke-dasharray:6 4}
+.ln.bad{stroke:var(--d-bad,#b91c1c)}
+.ah{fill:var(--d-line,#475569)}
+.ahb{fill:var(--d-bad,#b91c1c)}
+</style><defs><marker id="ah-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker><marker id="ahb-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ahb" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="bx " x="35" y="14" width="170" height="42" rx="8"/><text class="t" x="120.0" y="40.0" text-anchor="middle">Browser</text><path class="ln dash" d="M120,56 L120,300"/><rect class="bx acc" x="295" y="14" width="170" height="42" rx="8"/><text class="t" x="380.0" y="40.0" text-anchor="middle">n8n</text><path class="ln dash" d="M380,56 L380,300"/><rect class="bx " x="555" y="14" width="170" height="42" rx="8"/><text class="t" x="640.0" y="40.0" text-anchor="middle">PostgreSQL</text><path class="ln dash" d="M640,56 L640,300"/><rect class="bx " x="775" y="14" width="170" height="42" rx="8"/><text class="t" x="860.0" y="40.0" text-anchor="middle">n8n-Volumes</text><path class="ln dash" d="M860,56 L860,300"/><path class="ln " d="M120,100 L378,100" marker-end="url(#ah-flow)"/><text class="lb" x="250" y="92" text-anchor="middle">HTTP 127.0.0.1:5678 (Editor, REST)</text><path class="ln " d="M380,150 L638,150" marker-end="url(#ah-flow)"/><text class="lb" x="510" y="142" text-anchor="middle">Workflows, Credentials, Executions</text><path class="ln " d="M638,180 L382,180" marker-end="url(#ah-flow)"/><text class="lb" x="510" y="196" text-anchor="middle">Ergebnisse</text><path class="ln " d="M380,230 L858,230" marker-end="url(#ah-flow)"/><text class="lb" x="620" y="222" text-anchor="middle">Binärdaten, Konfiguration, Event-Log</text><rect class="bx ok" x="300" y="252" width="420" height="44" rx="8"/><text class="t" x="510.0" y="270.0" text-anchor="middle">Credentials: AES-verschlüsselt mit N8N_ENCRYPTION_KEY</text><text class="s" x="510.0" y="288.0" text-anchor="middle">vor dem Speichern in credentials_entity</text></svg>

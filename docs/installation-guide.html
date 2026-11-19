@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="docs/tools/build_docs.py">
+<meta name="source" content="installation-guide.md sha256:7ed6bb7baf81">
+<title>Installationsanleitung · n8n-local</title>
+<style>
+:root{
+  --bg:#f7f8fa;--surface:#ffffff;--text:#1d2330;--muted:#556070;--border:#dfe3ea;
+  --accent:#2a5bd7;--accent-soft:#e9f0ff;--code-bg:#0f172a;--code-text:#e2e8f0;--code-head:#1e293b;
+  --inline-code:#eef1f6;--warn-bg:#fff5f2;--warn:#c2410c;--info-bg:#eef6ff;--info:#1d4ed8;
+  --row:#f9fafc;
+  --d-box:#ffffff;--d-stroke:#5b6b7f;--d-stroke-soft:#b3bdca;--d-region:#f3f5f8;--d-text:#1f2937;--d-muted:#4b5563;
+  --d-line:#475569;--d-halo:#f3f5f8;--d-acc:#2a5bd7;--d-acc-bg:#e9f0ff;--d-ok:#15803d;--d-ok-bg:#e7f7ee;
+  --d-bad:#b91c1c;--d-bad-bg:#fdecec;--d-net:#edf7f1;--d-net-stroke:#6aa287;--d-int:#f5effa;--d-int-stroke:#9a76b5;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1117;--surface:#161b22;--text:#e6e9ef;--muted:#9aa4b2;--border:#2a313c;
+  --accent:#7aa2ff;--accent-soft:#1b2640;--code-bg:#0b0f16;--code-head:#141a24;--inline-code:#222a36;
+  --warn-bg:#2a1a14;--warn:#fb923c;--info-bg:#132033;--info:#7aa2ff;--row:#1a2029;
+  --d-box:#1c232d;--d-stroke:#8b98a9;--d-stroke-soft:#3b4552;--d-region:#141a22;--d-text:#e6e9ef;--d-muted:#a6b0bd;
+  --d-line:#9aa6b6;--d-halo:#141a22;--d-acc:#7aa2ff;--d-acc-bg:#1b2640;--d-ok:#4ade80;--d-ok-bg:#12291c;
+  --d-bad:#f87171;--d-bad-bg:#2d1618;--d-net:#13211a;--d-net-stroke:#4f8a6d;--d-int:#1f1828;--d-int-stroke:#8e6fab;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1117;--surface:#161b22;--text:#e6e9ef;--muted:#9aa4b2;--border:#2a313c;
+  --accent:#7aa2ff;--accent-soft:#1b2640;--code-bg:#0b0f16;--code-head:#141a24;--inline-code:#222a36;
+  --warn-bg:#2a1a14;--warn:#fb923c;--info-bg:#132033;--info:#7aa2ff;--row:#1a2029;
+  --d-box:#1c232d;--d-stroke:#8b98a9;--d-stroke-soft:#3b4552;--d-region:#141a22;--d-text:#e6e9ef;--d-muted:#a6b0bd;
+  --d-line:#9aa6b6;--d-halo:#141a22;--d-acc:#7aa2ff;--d-acc-bg:#1b2640;--d-ok:#4ade80;--d-ok-bg:#12291c;
+  --d-bad:#f87171;--d-bad-bg:#2d1618;--d-net:#13211a;--d-net-stroke:#4f8a6d;--d-int:#1f1828;--d-int-stroke:#8e6fab;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+a{color:var(--accent);text-underline-offset:2px}
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);max-width:1400px;margin:0 auto}
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;padding:28px 20px 40px;border-right:1px solid var(--border);background:var(--surface)}
+.brand{font-weight:700;font-size:15px;letter-spacing:.01em;margin:0 0 4px}
+.brand-sub{color:var(--muted);font-size:13px;margin:0 0 22px}
+.nav-docs{list-style:none;margin:0 0 26px;padding:0;display:grid;gap:4px}
+.nav-docs a{display:block;padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--text)}
+.nav-docs a small{display:block;color:var(--muted);font-size:12.5px}
+.nav-docs a:hover{background:var(--row)}
+.nav-docs a[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.toc-title{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px;font-weight:600}
+.toc{list-style:none;margin:0;padding:0;font-size:14px}
+.toc li{margin:0}
+.toc a{display:block;padding:3px 0 3px 10px;border-left:2px solid transparent;color:var(--muted);text-decoration:none}
+.toc a:hover,.toc a.active{color:var(--text);border-left-color:var(--accent)}
+.toc .l3 a{padding-left:24px;font-size:13px}
+main{padding:40px 56px 80px;min-width:0}
+.page-head{border-bottom:1px solid var(--border);margin-bottom:28px;padding-bottom:20px}
+.eyebrow{color:var(--accent);font-weight:600;font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 6px}
+h1{font-size:2.1rem;line-height:1.2;margin:0 0 8px;text-wrap:balance}
+.meta{color:var(--muted);font-size:14px;margin:0}
+h2{font-size:1.5rem;line-height:1.3;margin:2.6em 0 .7em;padding-top:.4em;border-top:1px solid var(--border)}
+h2:first-of-type{border-top:0;margin-top:1.2em}
+h3{font-size:1.15rem;margin:2em 0 .6em}
+h2,h3{scroll-margin-top:16px}
+p,ul,ol{margin:0 0 1em}
+li{margin:.25em 0}
+ol>li::marker{font-weight:600;color:var(--accent)}
+code{font:0.88em/1.5 ui-monospace,"Cascadia Code",Consolas,monospace;background:var(--inline-code);padding:.12em .38em;border-radius:5px;overflow-wrap:anywhere}
+.code{margin:0 0 1.2em;border-radius:10px;overflow:hidden;background:var(--code-bg);border:1px solid var(--border)}
+.code-head{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:var(--code-head);color:#94a3b8;font-size:12px;font-weight:600;letter-spacing:.04em}
+.copy{background:transparent;border:1px solid #334155;color:#cbd5e1;border-radius:6px;font:inherit;padding:2px 10px;cursor:pointer}
+.copy:hover{border-color:#64748b}
+pre{margin:0;padding:14px 16px;overflow-x:auto}
+pre code{background:none;padding:0;color:var(--code-text);font-size:13.5px;line-height:1.6;white-space:pre;overflow-wrap:normal}
+.table-wrap{overflow-x:auto;margin:0 0 1.3em;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--row);font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td code{white-space:nowrap}
+.callout{margin:0 0 1.3em;padding:12px 16px 2px;border-radius:10px;border-left:4px solid var(--info);background:var(--info-bg)}
+.callout.warn{border-left-color:var(--warn);background:var(--warn-bg)}
+.callout.warn strong:first-child{color:var(--warn)}
+.callout.info strong:first-child{color:var(--info)}
+.diagram{margin:1.2em 0 1.8em;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--d-region)}
+.diagram-svg{display:block;width:100%;height:auto}
+.diagram figcaption{color:var(--muted);font-size:13px;text-align:center;margin-top:8px}
+.foot{margin-top:56px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:13px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px}
+.pager a{flex:1;border:1px solid var(--border);border-radius:10px;padding:12px 16px;text-decoration:none;background:var(--surface)}
+.pager a small{display:block;color:var(--muted)}
+.pager .next{text-align:right}
+.theme-toggle{margin-top:24px;background:var(--row);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
+.menu-btn{display:none}
+@media (max-width:960px){
+  .layout{display:block}
+  .sidebar{position:static;height:auto;border-right:0;border-bottom:1px solid var(--border);padding:16px}
+  .sidebar .toc-block{display:none}
+  .sidebar.open .toc-block{display:block}
+  .menu-btn{display:inline-block;margin:0 0 8px;background:var(--row);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;font:inherit;font-size:14px}
+  main{padding:24px 16px 60px}
+  h1{font-size:1.7rem}
+  .pager{flex-direction:column}
+}
+@media print{
+  body{background:#fff;color:#000;font-size:11pt}
+  .sidebar,.copy,.pager,.theme-toggle,.menu-btn{display:none!important}
+  .layout{display:block}
+  main{padding:0}
+  a{color:#000}
+  .code{border:1px solid #999;background:#fff}
+  .code-head{background:#eee;color:#333}
+  pre code{color:#000;white-space:pre-wrap}
+  .table-wrap{overflow:visible;border-color:#999}
+  h2{break-after:avoid;border-top-color:#999}
+  .diagram,table,.callout,.code{break-inside:avoid}
+  .diagram{background:#fff}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigation">
+  <p class="brand">n8n-local</p>
+  <p class="brand-sub">Lokale n8n-Installation mit PostgreSQL</p>
+  <button type="button" class="menu-btn" aria-label="Inhaltsverzeichnis ein-/ausblenden">Inhalt ☰</button>
+  <ul class="nav-docs"><li><a href="installation-guide.html" aria-current="page">Installationsanleitung<small>Neuinstallation Schritt für Schritt</small></a></li><li><a href="architecture.html">Architektur<small>Aufbau, Updater, Sicherheit</small></a></li><li><a href="maintenance.html">Wartung &amp; Administration<small>Betrieb, Backup, Restore, Updates</small></a></li></ul>
+  <div class="toc-block">
+    <p class="toc-title">Auf dieser Seite</p>
+    <ul class="toc"><li class="l2"><a href="#referenzstand">Referenzstand</a></li><li class="l2"><a href="#1-voraussetzungen-und-systemanforderungen">1. Voraussetzungen und Systemanforderungen</a></li><li class="l2"><a href="#2-docker-installation">2. Docker-Installation</a></li><li class="l2"><a href="#3-docker-compose-prüfung">3. Docker-Compose-Prüfung</a></li><li class="l2"><a href="#4-erstellung-der-projektstruktur">4. Erstellung der Projektstruktur</a></li><li class="l2"><a href="#5-erstellung-und-konfiguration-der-env">5. Erstellung und Konfiguration der .env</a></li><li class="l2"><a href="#6-generierung-der-passwörter-und-encryption-keys">6. Generierung der Passwörter und Encryption Keys</a></li><li class="l2"><a href="#7-konfiguration-von-postgresql">7. Konfiguration von PostgreSQL</a></li><li class="l2"><a href="#8-konfiguration-von-n8n">8. Konfiguration von n8n</a></li><li class="l2"><a href="#9-erklärung-der-docker-compose-datei">9. Erklärung der Docker-Compose-Datei</a></li><li class="l2"><a href="#10-erstellung-der-persistenten-volumes">10. Erstellung der persistenten Volumes</a></li><li class="l2"><a href="#11-starten-der-container">11. Starten der Container</a></li><li class="l2"><a href="#12-überprüfung-der-installation">12. Überprüfung der Installation</a></li><li class="l2"><a href="#13-erstmalige-einrichtung-des-n8n-benutzerkontos">13. Erstmalige Einrichtung des n8n-Benutzerkontos</a></li><li class="l2"><a href="#14-zugriff-auf-die-lokale-weboberfläche">14. Zugriff auf die lokale Weboberfläche</a></li><li class="l2"><a href="#15-host-updater-und-wöchentlichen-workflow-einrichten">15. Host-Updater und wöchentlichen Workflow einrichten</a></li><li class="l3"><a href="#151-host-updater-installieren">15.1 Host-Updater installieren</a></li><li class="l3"><a href="#152-credential-für-den-updater-anlegen">15.2 Credential für den Updater anlegen</a></li><li class="l3"><a href="#153-workflow-importieren-und-aktivieren">15.3 Workflow importieren und aktivieren</a></li><li class="l3"><a href="#154-funktionstest">15.4 Funktionstest</a></li><li class="l2"><a href="#checkliste-neuinstallation">Checkliste Neuinstallation</a></li></ul>
+    <button type="button" class="theme-toggle">Hell / Dunkel</button>
+  </div>
+</nav>
+<main id="inhalt">
+<header class="page-head">
+  <p class="eyebrow">n8n-local Dokumentation</p>
+  <h1>Installationsanleitung: n8n lokal mit Docker und PostgreSQL</h1>
+  <p class="meta">Quelle: <code>docs/installation-guide.md</code> · generiert mit <code>docs/tools/build_docs.py</code></p>
+</header>
+<p>Diese Anleitung beschreibt jeden Schritt, um die Umgebung <code>n8n-local</code> auf einem Windows-Rechner von Grund auf neu einzurichten, ohne fremde Hilfe. Alle Befehle sind für <strong>Windows PowerShell</strong> geschrieben und werden im Projektverzeichnis <code>C:\Weiterbildung\docker\n8n-local</code> ausgeführt, sofern nicht anders angegeben.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Dokument</th>
+<th>Inhalt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Installationsanleitung</strong> (dieses Dokument)</td>
+<td>Neuinstallation Schritt für Schritt</td>
+</tr>
+<tr>
+<td><a href="architecture.md">Architektur</a></td>
+<td>Aufbau, Netzwerke, Volumes, Updater, Sicherheitskonzept</td>
+</tr>
+<tr>
+<td><a href="maintenance.md">Wartung und Administration</a></td>
+<td>Betrieb, Backup, Restore, Updates, Fehleranalyse</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="referenzstand">Referenzstand</h2>
+<p>Diese Werte wurden bei der Installation am 16.11.2026 tatsächlich verwendet und getestet:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Komponente</th>
+<th>Version / Wert</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Betriebssystem</td>
+<td>Windows 11 Home, Build 26300 (x64)</td>
+</tr>
+<tr>
+<td>CPU / RAM</td>
+<td>AMD Ryzen 7 7435HS (8 Kerne), 16 GB</td>
+</tr>
+<tr>
+<td>Docker Desktop</td>
+<td>4.98.0 mit WSL-2-Backend</td>
+</tr>
+<tr>
+<td>Docker Engine</td>
+<td>29.9.2</td>
+</tr>
+<tr>
+<td>Docker Compose</td>
+<td>v5.6.1 (Plugin <code>docker compose</code>)</td>
+</tr>
+<tr>
+<td>Git</td>
+<td>2.50.1</td>
+</tr>
+<tr>
+<td>Python (für Host-Updater)</td>
+<td>3.15.2</td>
+</tr>
+<tr>
+<td>n8n</td>
+<td>2.47.7 (Image <code>docker.n8n.io/n8nio/n8n:2.47.7</code>)</td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td>17.12 (Image <code>postgres:17.12</code>)</td>
+</tr>
+<tr>
+<td>n8n-Adresse</td>
+<td><a href="http://localhost:5678">http://localhost:5678</a></td>
+</tr>
+<tr>
+<td>Host-Updater</td>
+<td><code>http://127.0.0.1:5680</code> (nur lokal)</td>
+</tr>
+<tr>
+<td>Zeitzone</td>
+<td><code>Europe/Berlin</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="1-voraussetzungen-und-systemanforderungen">1. Voraussetzungen und Systemanforderungen</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Anforderung</th>
+<th>Minimum</th>
+<th>Empfohlen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows</td>
+<td>Windows 10 22H2 / Windows 11 (Home, Pro, Enterprise)</td>
+<td>Windows 11</td>
+</tr>
+<tr>
+<td>Virtualisierung</td>
+<td>Im BIOS/UEFI aktiviert (AMD-V / Intel VT-x)</td>
+<td></td>
+</tr>
+<tr>
+<td>WSL</td>
+<td>WSL 2</td>
+<td>aktuelle Version (<code>wsl --update</code>)</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>8 GB</td>
+<td>16 GB</td>
+</tr>
+<tr>
+<td>Freier Speicher</td>
+<td>10 GB</td>
+<td>30 GB+ (Images, Volumes, Backups)</td>
+</tr>
+<tr>
+<td>Freie Ports</td>
+<td>5678 (n8n), 5680 (Host-Updater)</td>
+<td></td>
+</tr>
+<tr>
+<td>Python</td>
+<td>3.10+ (nur Standardbibliothek)</td>
+<td>3.12+</td>
+</tr>
+</tbody>
+</table></div>
+<p>Prüfen Sie den Ausgangszustand:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell"># Betriebssystem
+Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version, BuildNumber
+# Virtualisierung aktiv?
+(Get-CimInstance Win32_ComputerSystem).HypervisorPresent
+# Freier Speicher auf C:
+Get-PSDrive C | Select-Object Used, Free
+# Ports frei? (keine Ausgabe = frei)
+netstat -ano | Select-String &#x27;:5678 |:5680 &#x27;
+# Git und Python
+git --version
+python --version
+</code></pre></div>
+<aside class="callout info" role="note">
+<p><strong>Hinweis:</strong> Python wird nur für den Host-Updater (<code>updater/n8nctl.py</code>) benötigt. Installation: <a href="https://www.python.org/downloads/windows/">https://www.python.org/downloads/windows/</a>, dabei die Option „Add python.exe to PATH“ aktivieren.</p>
+</aside>
+<h2 id="2-docker-installation">2. Docker-Installation</h2>
+<ol>
+<li>
+<p>WSL 2 installieren bzw. aktualisieren (PowerShell <strong>als Administrator</strong>):</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">wsl --install --no-distribution
+wsl --update
+</code></pre></div>
+<p>Danach den Rechner neu starten, falls dazu aufgefordert.</p>
+</li>
+<li>
+<p>Docker Desktop von <a href="https://docs.docker.com/desktop/setup/install/windows-install/">https://docs.docker.com/desktop/setup/install/windows-install/</a> herunterladen und installieren. Im Installer <strong>„Use WSL 2 instead of Hyper-V“</strong> aktiviert lassen (unter Windows Home die einzige Option).</p>
+</li>
+<li>
+<p>Docker Desktop starten und unter <strong>Settings → General</strong> aktivieren:</p>
+<ul>
+<li><strong>Start Docker Desktop when you sign in to your computer</strong>: Pflicht, damit Container und der wöchentliche Workflow ohne manuelles Zutun laufen.</li>
+<li><strong>Use the WSL 2 based engine</strong>: aktiviert.</li>
+</ul>
+</li>
+</ol>
+<aside class="callout warn" role="note">
+<p><strong>Warnung:</strong> Administratorrechte werden nur für die Installation von WSL und Docker Desktop benötigt. Alle weiteren Schritte laufen als normaler Benutzer.</p>
+</aside>
+<h2 id="3-docker-compose-prüfung">3. Docker-Compose-Prüfung</h2>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker version            # Client UND Server müssen antworten
+docker compose version    # erwartet: Docker Compose version v2.x oder neuer
+docker info --format &#x27;{{.OSType}} {{.ServerVersion}}&#x27;   # erwartet: linux ...
+docker run --rm hello-world
+</code></pre></div>
+<p>Antwortet nur der Client, läuft die Docker-Engine nicht: Docker Desktop starten und warten, bis das Wal-Symbol „Engine running“ meldet.</p>
+<p>Vor der Installation auf Konflikte prüfen:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker ps -a --format &#x27;{{.Names}}&#x27; | Select-String &#x27;^(n8n|postgres)$&#x27;   # keine Ausgabe = kein Konflikt
+docker volume ls --format &#x27;{{.Name}}&#x27; | Select-String &#x27;n8n-local&#x27;
+</code></pre></div>
+<h2 id="4-erstellung-der-projektstruktur">4. Erstellung der Projektstruktur</h2>
+<p>Das Projekt ist eigenständig und liegt außerhalb anderer Repositories:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">New-Item -ItemType Directory -Force C:\Weiterbildung\docker\n8n-local
+Set-Location C:\Weiterbildung\docker\n8n-local
+# Bei Wiederherstellung aus Git:
+# git clone &lt;repository-url&gt; C:\Weiterbildung\docker\n8n-local
+</code></pre></div>
+<p>Zielstruktur:</p>
+<div class="code"><div class="code-head"><span>Text</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-text">n8n-local/
+├── docker-compose.yml          # Services, Netzwerke, Volumes
+├── .env                        # Geheimnisse (NICHT in Git)
+├── .env.example                # Vorlage ohne Geheimnisse
+├── .gitignore
+├── README.md
+├── scripts/                    # PowerShell-Wrapper für Administration
+│   ├── init-env.ps1            # .env mit Geheimnissen erzeugen
+│   ├── backup.ps1 / restore.ps1
+│   ├── check-version.ps1 / update-n8n.ps1 / health.ps1
+│   └── install-updater-task.ps1 / uninstall-updater-task.ps1
+├── updater/
+│   ├── n8nctl.py               # Host-Updater: Backup, Restore, Update, Rollback, HTTP-API
+│   └── state/                  # Update-Sperre (Laufzeit, nicht in Git)
+├── workflows/
+│   └── weekly-n8n-update.json  # Workflow-Export ohne Geheimnisse
+├── backups/                    # Backups (nicht in Git)
+├── logs/                       # Update- und Prüfprotokolle (nicht in Git)
+└── docs/                       # Diese Dokumentation (Markdown + HTML)
+</code></pre></div>
+<h2 id="5-erstellung-und-konfiguration-der-env">5. Erstellung und Konfiguration der <code>.env</code></h2>
+<p>Alle sensiblen und veränderlichen Werte stehen ausschließlich in <code>.env</code>. Die Vorlage <code>.env.example</code> enthält alle Schlüssel:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Bedeutung</th>
+<th>Wert</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>N8N_VERSION</code></td>
+<td>Gepinnte n8n-Version (wird vom Updater gepflegt)</td>
+<td><code>2.47.7</code></td>
+</tr>
+<tr>
+<td><code>POSTGRES_VERSION</code></td>
+<td>Gepinnte PostgreSQL-Version</td>
+<td><code>17.12</code></td>
+</tr>
+<tr>
+<td><code>POSTGRES_DB</code></td>
+<td>Datenbankname</td>
+<td><code>n8n</code></td>
+</tr>
+<tr>
+<td><code>POSTGRES_USER</code></td>
+<td>Datenbankbenutzer</td>
+<td><code>n8n</code></td>
+</tr>
+<tr>
+<td><code>POSTGRES_PASSWORD</code></td>
+<td>Datenbankpasswort</td>
+<td>generiert, 256 Bit</td>
+</tr>
+<tr>
+<td><code>N8N_ENCRYPTION_KEY</code></td>
+<td>Schlüssel für gespeicherte Credentials</td>
+<td>generiert, 256 Bit</td>
+</tr>
+<tr>
+<td><code>N8N_PORT</code></td>
+<td>Host-Port der Weboberfläche (nur 127.0.0.1)</td>
+<td><code>5678</code></td>
+</tr>
+<tr>
+<td><code>TZ</code>, <code>GENERIC_TIMEZONE</code></td>
+<td>Zeitzone für Container und Schedule-Trigger</td>
+<td><code>Europe/Berlin</code></td>
+</tr>
+<tr>
+<td><code>UPDATER_TOKEN</code></td>
+<td>Bearer-Token zwischen n8n und Host-Updater</td>
+<td>generiert, 256 Bit</td>
+</tr>
+<tr>
+<td><code>UPDATER_HOST</code>, <code>UPDATER_PORT</code></td>
+<td>Bindung des Host-Updaters</td>
+<td><code>127.0.0.1</code>, <code>5680</code></td>
+</tr>
+<tr>
+<td><code>BACKUP_RETENTION_DAYS</code></td>
+<td>Backups älter als X Tage löschen …</td>
+<td><code>30</code></td>
+</tr>
+<tr>
+<td><code>BACKUP_KEEP_MIN</code></td>
+<td>… aber immer mindestens N neueste behalten</td>
+<td><code>5</code></td>
+</tr>
+<tr>
+<td><code>MIN_FREE_GB</code></td>
+<td>Mindestreserve an freiem Speicher für Backup/Update</td>
+<td><code>5</code></td>
+</tr>
+<tr>
+<td><code>N8N_OWNER_EMAIL</code>, <code>N8N_OWNER_PASSWORD</code></td>
+<td>Optional: initiales Owner-Konto (siehe Schritt 13)</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="6-generierung-der-passwörter-und-encryption-keys">6. Generierung der Passwörter und Encryption Keys</h2>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">powershell -ExecutionPolicy Bypass -File .\scripts\init-env.ps1
+</code></pre></div>
+<p>Das Skript kopiert <code>.env.example</code> nach <code>.env</code>, ersetzt alle <code>GENERATE_ME</code>-Werte durch kryptografisch zufällige 256-Bit-Werte (Base64url, ohne Sonderzeichen, die Compose stören) und beschränkt die Dateirechte auf den aktuellen Benutzer. Existiert <code>.env</code> bereits, bricht es ab.</p>
+<p>Manuelle Alternative für einzelne Werte:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">$b = New-Object byte[] 32; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b)
+[Convert]::ToBase64String($b).TrimEnd(&#x27;=&#x27;).Replace(&#x27;+&#x27;,&#x27;-&#x27;).Replace(&#x27;/&#x27;,&#x27;_&#x27;)
+</code></pre></div>
+<aside class="callout warn" role="note">
+<p><strong>Warnung:</strong> Der <code>N8N_ENCRYPTION_KEY</code> darf nach dem ersten Start <strong>nie</strong> geändert werden und darf nicht verloren gehen. Ohne ihn lassen sich gespeicherte Credentials nicht mehr entschlüsseln. Bewahren Sie die <code>.env</code> zusätzlich an einem sicheren Ort auf, z. B. in einem Passwort-Manager. Jedes Backup enthält eine Kopie (<code>env.backup</code>).</p>
+</aside>
+<h2 id="7-konfiguration-von-postgresql">7. Konfiguration von PostgreSQL</h2>
+<p>PostgreSQL wird vollständig über Umgebungsvariablen des offiziellen Images konfiguriert (Ausschnitt aus <code>docker-compose.yml</code>):</p>
+<div class="code"><div class="code-head"><span>YAML</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-yaml">postgres:
+  image: postgres:${POSTGRES_VERSION}     # 17.12, gepinnt
+  container_name: postgres
+  restart: unless-stopped
+  environment:
+    POSTGRES_DB: ${POSTGRES_DB}
+    POSTGRES_USER: ${POSTGRES_USER}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    PGDATA: /var/lib/postgresql/data
+  volumes:
+    - postgres_data:/var/lib/postgresql/data
+  networks: [backend]                     # internes Netz, kein Host-Port
+  healthcheck:
+    test: [&quot;CMD-SHELL&quot;, &quot;pg_isready -U \&quot;$${POSTGRES_USER}\&quot; -d \&quot;$${POSTGRES_DB}\&quot; -h 127.0.0.1&quot;]
+</code></pre></div>
+<ul>
+<li>Beim <strong>ersten</strong> Start mit leerem Volume legt das Image Datenbank und Benutzer an. Spätere Änderungen von <code>POSTGRES_PASSWORD</code> in <code>.env</code> wirken nicht mehr auf die bestehende Datenbank.</li>
+<li>Es gibt <strong>kein</strong> <code>ports:</code> – PostgreSQL ist vom Host und aus dem LAN nicht erreichbar.</li>
+<li>PostgreSQL 17 nutzt <code>PGDATA=/var/lib/postgresql/data</code>. Ab PostgreSQL 18 ändert das offizielle Image den Pfad. Ein Major-Upgrade ist in der <a href="maintenance.md#manuelles-aktualisieren-von-postgresql">Wartungsdokumentation</a> beschrieben.</li>
+</ul>
+<h2 id="8-konfiguration-von-n8n">8. Konfiguration von n8n</h2>
+<p>Die wichtigsten n8n-Variablen (vollständig in <code>docker-compose.yml</code>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Wert</th>
+<th>Zweck</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DB_TYPE</code></td>
+<td><code>postgresdb</code></td>
+<td>PostgreSQL statt SQLite</td>
+</tr>
+<tr>
+<td><code>DB_POSTGRESDB_HOST</code></td>
+<td><code>postgres</code></td>
+<td>Service-Name im internen Netz</td>
+</tr>
+<tr>
+<td><code>DB_POSTGRESDB_PORT</code></td>
+<td><code>5432</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>DB_POSTGRESDB_DATABASE</code> / <code>_USER</code> / <code>_PASSWORD</code></td>
+<td>aus <code>.env</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>N8N_ENCRYPTION_KEY</code></td>
+<td>aus <code>.env</code></td>
+<td>fest, persistent</td>
+</tr>
+<tr>
+<td><code>N8N_HOST</code> / <code>N8N_PROTOCOL</code> / <code>N8N_PORT</code></td>
+<td><code>localhost</code> / <code>http</code> / <code>5678</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>N8N_EDITOR_BASE_URL</code>, <code>N8N_WEBHOOK_URL</code></td>
+<td><code>http://localhost:5678/</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>N8N_SECURE_COOKIE</code></td>
+<td><code>false</code></td>
+<td>nötig für HTTP auf localhost</td>
+</tr>
+<tr>
+<td><code>N8N_DEFAULT_BINARY_DATA_MODE</code></td>
+<td><code>filesystem</code></td>
+<td>Binärdaten im eigenen Volume</td>
+</tr>
+<tr>
+<td><code>N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS</code></td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>N8N_DIAGNOSTICS_ENABLED</code></td>
+<td><code>false</code></td>
+<td>keine Telemetrie</td>
+</tr>
+<tr>
+<td><code>N8N_UNVERIFIED_PACKAGES_ENABLED</code></td>
+<td><code>false</code></td>
+<td>keine ungeprüften Community-Pakete</td>
+</tr>
+<tr>
+<td><code>EXECUTIONS_DATA_PRUNE</code> / <code>_MAX_AGE</code></td>
+<td><code>true</code> / <code>336</code></td>
+<td>Ausführungsdaten nach 14 Tagen löschen</td>
+</tr>
+<tr>
+<td><code>GENERIC_TIMEZONE</code>, <code>TZ</code></td>
+<td><code>Europe/Berlin</code></td>
+<td>Zeitzone für Schedule-Trigger</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="9-erklärung-der-docker-compose-datei">9. Erklärung der Docker-Compose-Datei</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Konfiguration</th>
+<th>Begründung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name: n8n-local</code></td>
+<td>fester Projektname</td>
+<td>isoliert von anderen Compose-Projekten</td>
+</tr>
+<tr>
+<td>Images</td>
+<td><code>postgres:17.12</code>, <code>docker.n8n.io/n8nio/n8n:2.47.7</code></td>
+<td>offizielle Images, gepinnt, kein <code>latest</code></td>
+</tr>
+<tr>
+<td><code>restart</code></td>
+<td><code>unless-stopped</code></td>
+<td>Neustart nach Docker-/Systemneustart</td>
+</tr>
+<tr>
+<td><code>depends_on</code></td>
+<td><code>postgres: service_healthy</code>, <code>volume-init: service_completed_successfully</code></td>
+<td>n8n startet erst bei bereiter Datenbank</td>
+</tr>
+<tr>
+<td><code>volume-init</code></td>
+<td>einmaliger Alpine-Container</td>
+<td>setzt Besitzer UID 1000 auf das Binary-Volume</td>
+</tr>
+<tr>
+<td>Ports</td>
+<td>nur <code>127.0.0.1:5678:5678</code></td>
+<td>n8n nur lokal erreichbar</td>
+</tr>
+<tr>
+<td>Netzwerk <code>backend</code></td>
+<td><code>internal: true</code></td>
+<td>n8n ↔ PostgreSQL, kein Internetzugang</td>
+</tr>
+<tr>
+<td>Netzwerk <code>egress</code></td>
+<td>Standard-Bridge</td>
+<td>nur n8n: GitHub-API, Host-Updater, Port</td>
+</tr>
+<tr>
+<td>Healthcheck n8n</td>
+<td><code>GET /healthz/readiness</code></td>
+<td>prüft DB-Verbindung und Migrationen</td>
+</tr>
+<tr>
+<td>Healthcheck PostgreSQL</td>
+<td><code>pg_isready</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>security_opt</code></td>
+<td><code>no-new-privileges:true</code></td>
+<td>keine Rechteausweitung</td>
+</tr>
+<tr>
+<td>Ressourcen</td>
+<td>n8n 2 GB / 2 CPU, PostgreSQL 1 GB / 2 CPU</td>
+<td>schützt den Rechner</td>
+</tr>
+<tr>
+<td>Logging</td>
+<td><code>json-file</code>, 10 MB × 5</td>
+<td>Logrotation</td>
+</tr>
+</tbody>
+</table></div>
+<p>Die Datei prüfen:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker compose config --quiet     # keine Ausgabe = gültig
+</code></pre></div>
+<h2 id="10-erstellung-der-persistenten-volumes">10. Erstellung der persistenten Volumes</h2>
+<p>Die Volumes werden beim ersten <code>docker compose up</code> automatisch mit festen Namen angelegt:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Volume</th>
+<th>Mountpunkt</th>
+<th>Inhalt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>n8n-local_postgres_data</code></td>
+<td><code>/var/lib/postgresql/data</code> (postgres)</td>
+<td>gesamte n8n-Datenbank</td>
+</tr>
+<tr>
+<td><code>n8n-local_n8n_data</code></td>
+<td><code>/home/node/.n8n</code> (n8n)</td>
+<td>Instanz-Konfiguration, Event-Logs, Community-Nodes</td>
+</tr>
+<tr>
+<td><code>n8n-local_n8n_binary</code></td>
+<td><code>/home/node/.n8n/binaryData</code> (n8n)</td>
+<td>Binärdaten von Ausführungen</td>
+</tr>
+</tbody>
+</table></div>
+<p>Optional vorab anlegen und prüfen:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker volume create n8n-local_postgres_data
+docker volume create n8n-local_n8n_data
+docker volume create n8n-local_n8n_binary
+docker volume ls --filter name=n8n-local
+</code></pre></div>
+<aside class="callout info" role="note">
+<p><strong>Hinweis:</strong> Bei Docker Desktop liegen die Volumes in der WSL-2-VM (<code>docker-desktop</code>), physisch in der Datei <code>%LOCALAPPDATA%\Docker\wsl\disk\docker_data.vhdx</code>. Sie überstehen Container-Neustarts, Image-Updates und <code>docker compose down</code>. Nur <code>docker compose down -v</code> oder <code>docker volume rm</code> löscht sie.</p>
+</aside>
+<h2 id="11-starten-der-container">11. Starten der Container</h2>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker compose pull                       # Images herunterladen
+docker compose up -d postgres             # zuerst die Datenbank
+docker inspect postgres --format &#x27;{{.State.Health.Status}}&#x27;   # wiederholen bis &quot;healthy&quot;
+docker compose up -d                      # volume-init und n8n
+</code></pre></div>
+<p>Beim ersten Start führt n8n alle Datenbankmigrationen aus (ca. 30–60 s). Den Container währenddessen nicht stoppen.</p>
+<h2 id="12-überprüfung-der-installation">12. Überprüfung der Installation</h2>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker compose ps                                       # beide &quot;healthy&quot;
+docker logs n8n --tail 30                               # &quot;Editor is now accessible via: http://localhost:5678&quot;
+docker exec n8n n8n --version                           # 2.47.7
+docker exec postgres psql -U n8n -d n8n -tAc &quot;select count(*) from migrations&quot;   # &gt; 0
+Invoke-WebRequest http://localhost:5678/healthz/readiness -UseBasicParsing | Select-Object StatusCode   # 200
+.\scripts\health.ps1                                    # alle Checks &quot;ok&quot;: true
+</code></pre></div>
+<h2 id="13-erstmalige-einrichtung-des-n8n-benutzerkontos">13. Erstmalige Einrichtung des n8n-Benutzerkontos</h2>
+<ol>
+<li><a href="http://localhost:5678">http://localhost:5678</a> im Browser öffnen.</li>
+<li>Das Formular „Set up owner account“ ausfüllen (E-Mail, Vor-/Nachname, Passwort mit mind. 8 Zeichen, einer Ziffer und einem Großbuchstaben).</li>
+<li>Optional den Lizenzschlüssel der kostenlosen Community-Edition anfordern (Settings → Usage and plan).</li>
+</ol>
+<aside class="callout info" role="note">
+<p><strong>Hinweis zur aktuellen Installation:</strong> Das Owner-Konto wurde automatisiert angelegt (E-Mail <code>admin@n8n.local</code>, Passwort in <code>.env</code> unter <code>N8N_OWNER_PASSWORD</code>). Nach der ersten Anmeldung unter <strong>Settings → Personal</strong> E-Mail und Passwort ändern und die beiden Zeilen anschließend aus <code>.env</code> entfernen.</p>
+</aside>
+<h2 id="14-zugriff-auf-die-lokale-weboberfläche">14. Zugriff auf die lokale Weboberfläche</h2>
+<ul>
+<li>Adresse: <strong><a href="http://localhost:5678">http://localhost:5678</a></strong>, nur von diesem Rechner aus erreichbar.</li>
+<li>Aus dem LAN oder Internet ist n8n bewusst nicht erreichbar. Für externe Webhooks wäre ein abgesicherter Reverse-Proxy mit HTTPS nötig. Das ist nicht Teil dieser Installation.</li>
+</ul>
+<h2 id="15-host-updater-und-wöchentlichen-workflow-einrichten">15. Host-Updater und wöchentlichen Workflow einrichten</h2>
+<h3 id="151-host-updater-installieren">15.1 Host-Updater installieren</h3>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">powershell -ExecutionPolicy Bypass -File .\scripts\install-updater-task.ps1
+# erwartet: Host-Updater laeuft: {&quot;ok&quot;:true,&quot;service&quot;:&quot;n8n-local-updater&quot;}
+</code></pre></div>
+<p>Das Skript registriert die geplante Aufgabe <strong>„n8n-local Host-Updater“</strong>. Sie startet bei der Anmeldung im Benutzerkontext (keine Adminrechte nötig), lauscht nur auf <code>127.0.0.1:5680</code> und wird bei einem Absturz minütlich neu gestartet.</p>
+<h3 id="152-credential-für-den-updater-anlegen">15.2 Credential für den Updater anlegen</h3>
+<p>Der Workflow authentifiziert sich per Header <code>Authorization: Bearer &lt;UPDATER_TOKEN&gt;</code>. Variante A in der UI:</p>
+<ol>
+<li><strong>Credentials → Add credential → „Header Auth“</strong>.</li>
+<li>Name: <code>n8n Host Updater Token</code>, Header-Name: <code>Authorization</code>, Value: <code>Bearer </code> + Wert von <code>UPDATER_TOKEN</code> aus <code>.env</code>.</li>
+</ol>
+<p>Variante B per CLI (so wurde es installiert; die temporäre Datei wird sofort gelöscht):</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">$token = (Select-String -Path .env -Pattern &#x27;^UPDATER_TOKEN=(.+)$&#x27;).Matches[0].Groups[1].Value
+$cred = ConvertTo-Json -Depth 5 @(@{ id=&#x27;hostUpdaterCred1&#x27;; name=&#x27;n8n Host Updater Token&#x27;; type=&#x27;httpHeaderAuth&#x27;;
+          data=@{ name=&#x27;Authorization&#x27;; value=&quot;Bearer $token&quot; } })
+$tmp = New-TemporaryFile; [IO.File]::WriteAllText($tmp, $cred)
+docker cp $tmp n8n:/tmp/cred.json; Remove-Item $tmp
+docker exec n8n n8n import:credentials --input=/tmp/cred.json
+docker exec -u root n8n rm -f /tmp/cred.json
+</code></pre></div>
+<p>n8n verschlüsselt das Credential beim Import mit dem <code>N8N_ENCRYPTION_KEY</code>.</p>
+<h3 id="153-workflow-importieren-und-aktivieren">15.3 Workflow importieren und aktivieren</h3>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker cp .\workflows\weekly-n8n-update.json n8n:/tmp/wf.json
+docker exec n8n n8n import:workflow --input=/tmp/wf.json
+docker exec -u root n8n rm -f /tmp/wf.json
+docker exec n8n n8n publish:workflow --id=weeklyN8nUpdater
+docker compose restart n8n
+</code></pre></div>
+<p>Alternativ in der UI: <strong>Workflows → Import from file</strong>, im HTTP-Knoten das Credential <code>n8n Host Updater Token</code> auswählen und oben rechts <strong>Publish</strong> klicken.</p>
+<h3 id="154-funktionstest">15.4 Funktionstest</h3>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell"># Workflow einmal manuell ausführen (eigener Task-Broker-Port, da n8n läuft)
+docker exec -e N8N_RUNNERS_BROKER_PORT=5690 n8n n8n execute --id=weeklyN8nUpdater --rawOutput
+Get-Content .\logs\version-checks.jsonl -Tail 1
+</code></pre></div>
+<p>Erwartet: <code>&quot;decision&quot;: &quot;none&quot;</code> (aktuell) oder <code>&quot;decision&quot;: &quot;update&quot;</code> mit <code>&quot;updateRequested&quot;: true</code>. Im zweiten Fall führt der Host-Updater das Update ca. 20 Sekunden später aus. Das Ergebnis steht danach in <code>logs\updates.jsonl</code>.</p>
+<h2 id="checkliste-neuinstallation">Checkliste Neuinstallation</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Schritt</th>
+<th>Prüfung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Docker Desktop + WSL 2</td>
+<td><code>docker version</code> zeigt Server</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Projekt kopieren/klonen</td>
+<td>Struktur wie oben</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>.\scripts\init-env.ps1</code></td>
+<td><code>.env</code> existiert, Schlüssel sicher verwahrt</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>docker compose up -d</code></td>
+<td><code>docker compose ps</code> → healthy</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Owner-Konto anlegen</td>
+<td>Login funktioniert</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>.\scripts\install-updater-task.ps1</code></td>
+<td><code>/health</code> antwortet</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Credential + Workflow importieren, publizieren</td>
+<td>Workflow aktiv</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Funktionstest + <code>.\scripts\backup.ps1</code></td>
+<td>Backup „verified“</td>
+</tr>
+</tbody>
+</table></div>
+
+<div class="pager"><a class="next" href="architecture.html"><small>Weiter →</small>Architektur</a></div>
+<footer class="foot">Generiert aus <code>installation-guide.md</code> (SHA-256 7ed6bb7baf81). Nicht von Hand bearbeiten – Änderungen in der Markdown-Datei vornehmen und den Generator ausführen.</footer>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement,key='n8n-docs-theme';
+  try{var t=localStorage.getItem(key);if(t)root.setAttribute('data-theme',t);}catch(e){}
+  document.addEventListener('click',function(ev){
+    var b=ev.target.closest('.copy');
+    if(b){var code=b.closest('.code').querySelector('code').innerText;
+      (navigator.clipboard?navigator.clipboard.writeText(code):Promise.reject()).then(function(){b.textContent='Kopiert';setTimeout(function(){b.textContent='Kopieren'},1500)},function(){b.textContent='Markieren + Strg+C'});}
+    if(ev.target.closest('.theme-toggle')){
+      var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+      var next=dark?'light':'dark';root.setAttribute('data-theme',next);try{localStorage.setItem(key,next);}catch(e){}
+    }
+    if(ev.target.closest('.menu-btn')){document.querySelector('.sidebar').classList.toggle('open');}
+  });
+  var links=[].slice.call(document.querySelectorAll('.toc a'));
+  if('IntersectionObserver' in window&&links.length){
+    var map={};links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+    var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(l){l.classList.remove('active')});var a=map[e.target.id];if(a)a.classList.add('active');}});},{rootMargin:'0px 0px -75% 0px'});
+    document.querySelectorAll('main h2[id],main h3[id]').forEach(function(h){obs.observe(h);});
+  }
+})();
+</script>
+</body>
+</html>
