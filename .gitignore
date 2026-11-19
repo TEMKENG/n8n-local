@@ -16,3 +16,4 @@ __pycache__/
 *.dump
 *.tar.gz
 .playwright-mcp/
+.vscode/
