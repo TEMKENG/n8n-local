@@ -2,8 +2,8 @@
 """
 Erzeugt die HTML-Dokumentation aus den Markdown-Quellen in docs/.
 
-    python docs/tools/build_docs.py          # HTML neu erzeugen
-    python docs/tools/build_docs.py --check  # nur pruefen (Exit 1 bei Abweichung)
+    python3 docs/tools/build_docs.py          # HTML neu erzeugen
+    python3 docs/tools/build_docs.py --check  # nur pruefen (Exit 1 bei Abweichung)
 
 Markdown ist die einzige Quelle. Die HTML-Dateien werden vollstaendig daraus
 generiert, damit beide Formate inhaltlich identisch bleiben. Mermaid-Bloecke mit

@@ -100,14 +100,14 @@ class Svg:
 
 def system_overview() -> str:
     s = Svg(960, 540, "Systemübersicht n8n-local",
-            "Windows-Host mit Browser, Host-Updater und Projektordner; Docker Desktop mit n8n und PostgreSQL in getrennten Netzen und drei Volumes.")
+            "Lokaler Windows-, Linux- oder macOS-Host mit Browser, optionalem Host-Updater und Projektordner; Docker Engine mit n8n und PostgreSQL in getrennten Netzen und drei Volumes.")
     s.box(430, 12, 200, 50, ["GitHub Releases API", "api.github.com"])
-    s.region(20, 90, 300, 430, "WINDOWS 11 HOST (BENUTZER)")
+    s.region(20, 90, 300, 430, "LOKALER HOST")
     s.box(40, 135, 260, 48, ["Browser", "http://localhost:5678"])
-    s.box(40, 215, 260, 64, ["Host-Updater (n8nctl.py)", "127.0.0.1:5680 · Aufgabenplanung"], "acc")
+    s.box(40, 215, 260, 64, ["Optionaler Host-Updater", "n8nctl.py · 127.0.0.1:5680"], "acc")
     s.box(40, 315, 200, 48, ["Docker CLI / Compose"])
     s.box(40, 400, 260, 64, ["Projektordner", ".env · backups/ · logs/"])
-    s.region(360, 90, 580, 430, "DOCKER DESKTOP · WSL 2 VM")
+    s.region(360, 90, 580, 430, "DOCKER ENGINE")
     s.region(380, 128, 300, 134, "n8n-local_egress (Bridge)", "net", "bottom")
     s.box(430, 150, 200, 64, ["n8n 2.47.7", "Port 5678 · UID 1000"], "acc")
     s.region(380, 290, 300, 150, "n8n-local_backend (internal)", "int", "bottom")

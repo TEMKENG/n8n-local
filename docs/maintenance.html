@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="docs/tools/build_docs.py">
-<meta name="source" content="maintenance.md sha256:87697cbc3634">
+<meta name="source" content="maintenance.md sha256:b1b4dd7c557c">
 <title>Wartung &amp; Administration · n8n-local</title>
 <style>
 :root{
@@ -125,17 +125,17 @@ td code{white-space:nowrap}
   <ul class="nav-docs"><li><a href="installation-guide.html">Installationsanleitung<small>Neuinstallation Schritt für Schritt</small></a></li><li><a href="architecture.html">Architektur<small>Aufbau, Updater, Sicherheit</small></a></li><li><a href="maintenance.html" aria-current="page">Wartung &amp; Administration<small>Betrieb, Backup, Restore, Updates</small></a></li></ul>
   <div class="toc-block">
     <p class="toc-title">Auf dieser Seite</p>
-    <ul class="toc"><li class="l2"><a href="#schnellreferenz">Schnellreferenz</a></li><li class="l2"><a href="#starten-und-stoppen-der-container">Starten und Stoppen der Container</a></li><li class="l2"><a href="#neustarten-der-infrastruktur">Neustarten der Infrastruktur</a></li><li class="l2"><a href="#anzeigen-der-logs">Anzeigen der Logs</a></li><li class="l2"><a href="#prüfen-der-postgresql-verbindung">Prüfen der PostgreSQL-Verbindung</a></li><li class="l2"><a href="#manuelles-backup">Manuelles Backup</a></li><li class="l3"><a href="#automatische-backups-optional">Automatische Backups (optional)</a></li><li class="l2"><a href="#manuelle-wiederherstellung">Manuelle Wiederherstellung</a></li><li class="l2"><a href="#manuelles-aktualisieren-von-n8n">Manuelles Aktualisieren von n8n</a></li><li class="l2"><a href="#manuelles-aktualisieren-von-postgresql">Manuelles Aktualisieren von PostgreSQL</a></li><li class="l2"><a href="#kontrolle-des-automatisierten-update-workflows">Kontrolle des automatisierten Update-Workflows</a></li><li class="l2"><a href="#fehleranalyse">Fehleranalyse</a></li><li class="l2"><a href="#speicherplatzverwaltung">Speicherplatzverwaltung</a></li><li class="l2"><a href="#wiederherstellung-nach-einem-systemausfall">Wiederherstellung nach einem Systemausfall</a></li><li class="l3"><a href="#szenario-a-docker-desktop-oder-wsl-defekt-projektordner-intakt">Szenario A: Docker Desktop oder WSL defekt, Projektordner intakt</a></li><li class="l3"><a href="#szenario-b-neuer-rechner-nur-eine-backup-kopie-vorhanden">Szenario B: Neuer Rechner, nur eine Backup-Kopie vorhanden</a></li><li class="l3"><a href="#szenario-c-env-verloren-volumes-intakt">Szenario C: .env verloren, Volumes intakt</a></li><li class="l2"><a href="#regelmäßige-wartung">Regelmäßige Wartung</a></li></ul>
+    <ul class="toc"><li class="l2"><a href="#schnellreferenz">Schnellreferenz</a></li><li class="l2"><a href="#containerbetrieb">Containerbetrieb</a></li><li class="l2"><a href="#manuelles-backup-und-verifikation">Manuelles Backup und Verifikation</a></li><li class="l2"><a href="#wiederherstellen">Wiederherstellen</a></li><li class="l2"><a href="#updates-und-host-updater">Updates und Host-Updater</a></li><li class="l2"><a href="#protokolle-und-diagnose">Protokolle und Diagnose</a></li><li class="l2"><a href="#postgresql-wartung">PostgreSQL-Wartung</a></li><li class="l2"><a href="#dokumentation-generieren-und-prüfen">Dokumentation generieren und prüfen</a></li></ul>
     <button type="button" class="theme-toggle">Hell / Dunkel</button>
   </div>
 </nav>
 <main id="inhalt">
 <header class="page-head">
   <p class="eyebrow">n8n-local Dokumentation</p>
-  <h1>Wartung und Administration: n8n-local</h1>
+  <h1>Wartung und Administration</h1>
   <p class="meta">Quelle: <code>docs/maintenance.md</code> · generiert mit <code>docs/tools/build_docs.py</code></p>
 </header>
-<p>Alle Befehle für <strong>Windows PowerShell</strong>, ausgeführt in <code>C:\Weiterbildung\docker\n8n-local</code>. Wenn die Ausführungsrichtlinie Skripte blockiert, die Wrapper mit <code>powershell -ExecutionPolicy Bypass -File .\scripts\&lt;name&gt;.ps1</code> aufrufen.</p>
+<p>Alle Pfade in diesem Dokument sind relativ zum Projektstamm. Die Python-Verwaltung funktioniert unter Windows, Linux und macOS (Python 3.10+ sowie Docker CLI). Codebeispiele verwenden <code>python3</code> für Linux/macOS; unter Windows PowerShell <code>py -3</code> statt <code>python3</code> eingeben. <code>scripts/*.ps1</code> sind optionale Windows-PowerShell-Wrapper.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -145,16 +145,16 @@ td code{white-space:nowrap}
 </thead>
 <tbody>
 <tr>
-<td><a href="installation-guide.md">Installationsanleitung</a></td>
-<td>Neuinstallation Schritt für Schritt</td>
+<td><a href="installation-guide.md">Installation</a></td>
+<td>Erstinstallation unter Windows, Linux und macOS</td>
 </tr>
 <tr>
 <td><a href="architecture.md">Architektur</a></td>
-<td>Aufbau, Netzwerke, Volumes, Updater, Sicherheitskonzept</td>
+<td>Container, Netzwerke, Daten und Sicherheit</td>
 </tr>
 <tr>
-<td><strong>Wartung und Administration</strong> (dieses Dokument)</td>
-<td>Betrieb, Backup, Restore, Updates, Fehleranalyse</td>
+<td><strong>Wartung</strong> (dieses Dokument)</td>
+<td>Betrieb, Backup, Restore, Updates und Fehleranalyse</td>
 </tr>
 </tbody>
 </table></div>
@@ -172,392 +172,146 @@ td code{white-space:nowrap}
 <td><code>docker compose ps</code></td>
 </tr>
 <tr>
-<td>Gesamtzustand prüfen</td>
-<td><code>.\scripts\health.ps1</code></td>
+<td>Healthchecks</td>
+<td><code>python3 updater/n8nctl.py health</code></td>
 </tr>
 <tr>
 <td>Starten / Stoppen</td>
 <td><code>docker compose up -d</code> / <code>docker compose stop</code></td>
 </tr>
 <tr>
-<td>Logs n8n</td>
-<td><code>docker logs n8n --tail 100 -f</code></td>
+<td>Logs</td>
+<td><code>docker compose logs --tail 100 -f n8n</code></td>
 </tr>
 <tr>
 <td>Backup</td>
-<td><code>.\scripts\backup.ps1</code></td>
+<td><code>python3 updater/n8nctl.py backup</code></td>
+</tr>
+<tr>
+<td>Backup prüfen</td>
+<td><code>python3 updater/n8nctl.py verify backups/&lt;backup-ordner&gt;</code></td>
 </tr>
 <tr>
 <td>Restore</td>
-<td><code>.\scripts\restore.ps1 -BackupDirectory .\backups\&lt;ordner&gt;</code></td>
+<td><code>python3 updater/n8nctl.py restore backups/&lt;backup-ordner&gt;</code></td>
 </tr>
 <tr>
-<td>Neue Version?</td>
-<td><code>.\scripts\check-version.ps1</code></td>
+<td>Version prüfen</td>
+<td><code>python3 updater/n8nctl.py check</code></td>
 </tr>
 <tr>
-<td>Manuelles Update</td>
-<td><code>.\scripts\update-n8n.ps1 -Version x.y.z</code></td>
+<td>Update prüfen</td>
+<td><code>python3 updater/n8nctl.py preflight &lt;version&gt;</code></td>
 </tr>
 <tr>
-<td>Update-Protokoll</td>
-<td><code>Get-Content .\logs\updates.jsonl -Tail 3</code></td>
-</tr>
-<tr>
-<td>Prüfprotokoll Workflow</td>
-<td><code>Get-Content .\logs\version-checks.jsonl -Tail 5</code></td>
-</tr>
-<tr>
-<td>Updater-Log</td>
-<td><code>Get-Content .\logs\updater.log -Tail 50</code></td>
+<td>Update ausführen</td>
+<td><code>python3 updater/n8nctl.py update &lt;version&gt;</code></td>
 </tr>
 </tbody>
 </table></div>
-<h2 id="starten-und-stoppen-der-container">Starten und Stoppen der Container</h2>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker compose up -d              # alles starten (postgres → volume-init → n8n)
-docker compose stop               # anhalten, Container bleiben erhalten
-docker compose stop n8n           # nur n8n anhalten (z. B. vor manuellen DB-Arbeiten)
-docker compose start              # angehaltene Container wieder starten
-docker compose down               # Container und Netzwerke entfernen; Volumes bleiben!
+<p>Windows PowerShell kann dieselben Python-Befehle mit <code>py -3 updater\n8nctl.py ...</code> aufrufen. Für häufig genutzte Windows-Aktionen gibt es zusätzlich <code>scripts/health.ps1</code>, <code>backup.ps1</code>, <code>restore.ps1</code>, <code>check-version.ps1</code> und <code>update-n8n.ps1</code>.</p>
+<h2 id="containerbetrieb">Containerbetrieb</h2>
+<div class="code"><div class="code-head"><span>sh</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-sh">docker compose up -d
+docker compose ps
+docker compose logs --tail 100 n8n
+docker compose logs --tail 100 postgres
+docker compose stop
+docker compose start
+docker compose down
 </code></pre></div>
-<aside class="callout warn" role="note">
-<p><strong>Warnung:</strong> Niemals <code>docker compose down -v</code> ausführen. <code>-v</code> löscht alle Volumes und damit die gesamte Datenbank.</p>
-</aside>
-<p>Wegen <code>restart: unless-stopped</code> starten die Container nach einem Neustart von Docker Desktop oder Windows automatisch, sofern sie nicht vorher manuell gestoppt wurden.</p>
-<h2 id="neustarten-der-infrastruktur">Neustarten der Infrastruktur</h2>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker compose restart n8n        # nur n8n (z. B. nach Aktivieren eines Workflows per CLI)
-docker compose restart            # beide Container
-docker compose up -d --force-recreate n8n   # n8n neu erstellen, z. B. nach Änderung der docker-compose.yml
+<p><code>docker compose down</code> lässt benannte Volumes bestehen. <strong>Nicht <code>docker compose down -v</code> verwenden</strong>, wenn die Instanzdaten erhalten bleiben sollen.</p>
+<h2 id="manuelles-backup-und-verifikation">Manuelles Backup und Verifikation</h2>
+<p>Ein Backup stoppen n8n für einen konsistenten Datenstand:</p>
+<div class="code"><div class="code-head"><span>sh</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-sh">python3 updater/n8nctl.py backup
 </code></pre></div>
-<p>Host-Updater neu starten:</p>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">Stop-ScheduledTask  -TaskName &#x27;n8n-local Host-Updater&#x27;
-Start-ScheduledTask -TaskName &#x27;n8n-local Host-Updater&#x27;
-Invoke-RestMethod http://127.0.0.1:5680/health
+<p>Die Ausgabe nennt den erzeugten Ordner unter <code>backups/</code>. Verifizieren Sie ein bestimmtes Backup mit:</p>
+<div class="code"><div class="code-head"><span>sh</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-sh">python3 updater/n8nctl.py verify backups/&lt;backup-ordner&gt;
 </code></pre></div>
-<h2 id="anzeigen-der-logs">Anzeigen der Logs</h2>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker logs n8n --tail 100                 # letzte 100 Zeilen
-docker logs n8n -f                         # live (Strg+C beendet)
-docker logs postgres --since 1h
-docker compose logs --tail 50              # alle Services
-Get-Content .\logs\updater.log -Tail 50 -Wait   # Host-Updater live
+<p>Optional: <code>python3 updater/n8nctl.py backup --online</code> erstellt das Backup ohne n8n anzuhalten; verwenden Sie das nur, wenn gleichzeitige Workflow-Ausführungen tolerierbar sind. Für regelmäßige Backups kann der Befehl über die native Aufgabenplanung des Betriebssystems gestartet werden (Windows Task Scheduler, Linux <code>cron</code>/systemd timer, macOS <code>launchd</code>). Achten Sie darauf, das Arbeitsverzeichnis auf den Projektstamm zu setzen.</p>
+<p>Backups enthalten <code>.env</code>, Datenbankinhalte und den Encryption Key. Beschränken Sie Dateizugriff und verschlüsseln Sie externe Kopien.</p>
+<h2 id="wiederherstellen">Wiederherstellen</h2>
+<p>Vor dem Restore wird bei laufendem PostgreSQL automatisch ein Sicherheits-Backup erstellt. Der Restore erfordert eine Bestätigung:</p>
+<div class="code"><div class="code-head"><span>sh</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-sh">python3 updater/n8nctl.py restore backups/&lt;backup-ordner&gt;
 </code></pre></div>
-<p>Die Container-Logs werden automatisch rotiert (<code>json-file</code>, 10 MB × 5 Dateien pro Container).</p>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>Datei</th>
-<th>Inhalt</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>logs\updater.log</code></td>
-<td>Textprotokoll aller Aktionen des Host-Updaters (inkl. abgelehnter Anfragen)</td>
-</tr>
-<tr>
-<td><code>logs\updates.jsonl</code></td>
-<td>ein JSON-Datensatz pro Update-Vorgang</td>
-</tr>
-<tr>
-<td><code>logs\version-checks.jsonl</code></td>
-<td>ein JSON-Datensatz pro Workflow-Lauf (Entscheidung, Versionen)</td>
-</tr>
-<tr>
-<td><code>logs\update-&lt;id&gt;.out</code></td>
-<td>Ausgabe des separaten Update-Prozesses</td>
-</tr>
-</tbody>
-</table></div>
-<p>Felder in <code>updates.jsonl</code>: <code>startedAt</code>, <code>finishedAt</code>, <code>durationSeconds</code>, <code>versionBefore</code>, <code>targetVersion</code>, <code>versionAfter</code>, <code>backup</code>, <code>backupStatus</code>, <code>health</code> (alle Checks), <code>status</code> (<code>success</code> / <code>aborted</code> / <code>rolled-back</code> / <code>rollback-failed</code>), <code>rollback</code>, <code>error</code>, <code>steps</code>, <code>requestedBy</code>.</p>
-<p>Übersicht als Tabelle:</p>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">Get-Content .\logs\updates.jsonl | ConvertFrom-Json |
-  Select-Object startedAt, versionBefore, targetVersion, versionAfter, status, backupStatus, durationSeconds |
-  Format-Table -AutoSize
+<p>Bei fehlender <code>.env</code> oder einem abweichenden Encryption Key übernehmen Sie die zum Backup gehörende Konfiguration ausdrücklich:</p>
+<div class="code"><div class="code-head"><span>sh</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-sh">python3 updater/n8nctl.py restore backups/&lt;backup-ordner&gt; --restore-env
 </code></pre></div>
-<h2 id="prüfen-der-postgresql-verbindung">Prüfen der PostgreSQL-Verbindung</h2>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker exec postgres pg_isready -U n8n -d n8n -h 127.0.0.1
-docker exec postgres psql -U n8n -d n8n -c &quot;select version();&quot;
-docker exec postgres psql -U n8n -d n8n -c &quot;select count(*) as workflows from workflow_entity;&quot;
-docker exec -it postgres psql -U n8n -d n8n          # interaktive Konsole (\q beendet)
-# Verbindung aus Sicht von n8n:
-Invoke-WebRequest http://localhost:5678/healthz/readiness -UseBasicParsing | Select-Object StatusCode
+<p><code>--yes</code> überspringt die Bestätigung. Nutzen Sie diese Option nur, wenn das zu überschreibende Ziel und der Backup-Pfad geprüft wurden.</p>
+<h2 id="updates-und-host-updater">Updates und Host-Updater</h2>
+<p>Prüfen Sie zuerst den stabilen Release-Stand sowie die Vorabprüfung:</p>
+<div class="code"><div class="code-head"><span>sh</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-sh">python3 updater/n8nctl.py check
+python3 updater/n8nctl.py preflight &lt;version&gt;
 </code></pre></div>
-<h2 id="manuelles-backup">Manuelles Backup</h2>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">.\scripts\backup.ps1                  # Standard: n8n wird für ca. 10–30 s gestoppt (konsistent)
-.\scripts\backup.ps1 -Reason vor-umbau
-.\scripts\backup.ps1 -Online          # ohne Stopp (nur wenn keine Workflows laufen)
+<p>Ein manuelles Update erstellt automatisch ein Backup, zieht das Image, wartet auf Healthchecks und führt bei Fehlern einen vollständigen Restore durch:</p>
+<div class="code"><div class="code-head"><span>sh</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-sh">python3 updater/n8nctl.py update &lt;version&gt;
 </code></pre></div>
-<p>Ablauf: Speicherplatz prüfen → n8n stoppen → <code>pg_dump</code> + <code>pg_dumpall --globals-only</code> → Volumes archivieren → <code>.env</code> und <code>docker-compose.yml</code> kopieren → <code>manifest.json</code> mit SHA-256 schreiben → verifizieren → n8n starten → Aufbewahrung anwenden. Erfolgsmeldung: <code>&quot;verified&quot;: true</code>.</p>
-<p>Ein vorhandenes Backup prüfen:</p>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">python .\updater\n8nctl.py verify .\backups\20261116-092806-manual
+<p>Major-Updates erfordern <code>--allow-major</code>; lesen Sie vorher die n8n-Release-Hinweise und erstellen Sie ein zusätzliches Backup. Ein expliziter Restore ist weiterhin verfügbar, falls nötig.</p>
+<p>Der optionale Host-Updater wird unter Windows über die geplante Aufgabe installiert:</p>
+<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">.\scripts\install-updater-task.ps1
+.\scripts\uninstall-updater-task.ps1
 </code></pre></div>
-<p>Aufbewahrung (in <code>.env</code>): Backups älter als <code>BACKUP_RETENTION_DAYS=30</code> Tage werden beim nächsten Backup gelöscht, die <code>BACKUP_KEEP_MIN=5</code> neuesten bleiben immer erhalten. Manuell anstoßen: <code>python .\updater\n8nctl.py prune</code>.</p>
-<aside class="callout warn" role="note">
-<p><strong>Warnung:</strong> Backups enthalten den Encryption Key. Kopien außerhalb des Rechners nur verschlüsselt ablegen, z. B. <code>7z a -t7z -mhe=on -p backup.7z .\backups\&lt;ordner&gt;</code>.</p>
-</aside>
-<h3 id="automatische-backups-optional">Automatische Backups (optional)</h3>
-<p>Ein tägliches Backup lässt sich per Aufgabenplanung einrichten:</p>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">$a = New-ScheduledTaskAction -Execute &#x27;powershell.exe&#x27; `
-     -Argument &#x27;-NoProfile -ExecutionPolicy Bypass -File C:\Weiterbildung\docker\n8n-local\scripts\backup.ps1 -Reason daily&#x27;
-$t = New-ScheduledTaskTrigger -Daily -At 02:30
-Register-ScheduledTask -TaskName &#x27;n8n-local Backup&#x27; -Action $a -Trigger $t
+<p>Manueller Start, beispielsweise unter macOS:</p>
+<div class="code"><div class="code-head"><span>sh</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-sh">python3 updater/n8nctl.py serve
 </code></pre></div>
-<p>Vor jedem automatischen Update erstellt der Host-Updater zusätzlich immer ein Backup <code>…-pre-update</code>.</p>
-<h2 id="manuelle-wiederherstellung">Manuelle Wiederherstellung</h2>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">Get-ChildItem .\backups -Directory | Sort-Object Name     # Backup auswählen
-.\scripts\restore.ps1 -BackupDirectory .\backups\20261116-092806-manual
-# Rückfrage mit &quot;ja&quot; bestätigen; -Force überspringt die Rückfrage
+<p>Für Linux mit nativem Docker Engine ist die integrierte Loopback-API aus n8n heraus standardmäßig nicht erreichbar. Öffnen Sie den Dienst nicht global. Einzelne Befehle (<code>backup</code>, <code>restore</code>, <code>update</code>, <code>health</code>) funktionieren unabhängig davon direkt auf dem Host. Siehe <a href="installation-guide.md#7-host-updater-und-automatisierten-workflow-optional">Installationshinweise</a>.</p>
+<h2 id="protokolle-und-diagnose">Protokolle und Diagnose</h2>
+<div class="code"><div class="code-head"><span>sh</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-sh">docker compose ps
+docker compose logs --tail 100 n8n
+docker compose logs --tail 100 postgres
+python3 updater/n8nctl.py health
+python3 updater/n8nctl.py status
 </code></pre></div>
-<p>Ablauf: Hashes und Dump prüfen → Encryption Key vergleichen → Sicherheits-Backup <code>pre-restore</code> → <code>N8N_VERSION</code>/<code>POSTGRES_VERSION</code> aus dem Backup setzen → n8n stoppen → Volumes ersetzen → Datenbank neu anlegen und <code>pg_restore</code> → n8n starten → Healthchecks.</p>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>Situation</th>
-<th>Parameter</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Normaler Restore auf demselben Rechner</td>
-<td>keiner</td>
-</tr>
-<tr>
-<td><code>.env</code> fehlt oder Encryption Key unterscheidet sich</td>
-<td><code>-RestoreEnv</code> (übernimmt <code>env.backup</code>)</td>
-</tr>
-</tbody>
-</table></div>
-<h2 id="manuelles-aktualisieren-von-n8n">Manuelles Aktualisieren von n8n</h2>
-<p>Empfohlen über den Host-Updater: Vorabprüfung, Backup, Healthchecks und Rollback sind eingebaut.</p>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">.\scripts\check-version.ps1                              # installiert vs. neueste stabile Version
-.\scripts\update-n8n.ps1 -Version 2.47.8 -PreflightOnly  # nur prüfen
-.\scripts\update-n8n.ps1 -Version 2.47.8                 # Update mit Rückfrage
-.\scripts\update-n8n.ps1 -Version 3.0.1 -AllowMajor      # Major-Update (vorher Release Notes lesen!)
-</code></pre></div>
-<p>Bei Major-Updates zuerst die Release Notes und den Migrationsleitfaden von n8n lesen: <a href="https://docs.n8n.io/release-notes/">https://docs.n8n.io/release-notes/</a>.</p>
-<p>Komplett manuell, ohne Updater:</p>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">.\scripts\backup.ps1 -Reason vor-update
-docker pull docker.n8n.io/n8nio/n8n:2.47.8
-(Get-Content .env) -replace &#x27;^N8N_VERSION=.*&#x27;, &#x27;N8N_VERSION=2.47.8&#x27; | Set-Content .env -Encoding ascii
-docker compose up -d --no-deps n8n
-.\scripts\health.ps1
-# Bei Fehler: .\scripts\restore.ps1 -BackupDirectory .\backups\&lt;vor-update-ordner&gt; -Force
-</code></pre></div>
-<h2 id="manuelles-aktualisieren-von-postgresql">Manuelles Aktualisieren von PostgreSQL</h2>
-<p><strong>Minor-Update</strong> (z. B. 17.12 → 17.13, gleiche Datenformate):</p>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">.\scripts\backup.ps1 -Reason vor-pg-update
-(Get-Content .env) -replace &#x27;^POSTGRES_VERSION=.*&#x27;, &#x27;POSTGRES_VERSION=17.13&#x27; | Set-Content .env -Encoding ascii
-docker compose pull postgres
-docker compose up -d postgres
-.\scripts\health.ps1
-</code></pre></div>
-<p><strong>Major-Update</strong> (z. B. 17 → 18): Das Datenverzeichnis ist nicht kompatibel. Vorgehen per Dump und Restore:</p>
-<ol>
-<li><code>.\scripts\backup.ps1 -Reason vor-pg-major</code> ausführen und den Backup-Ordner notieren.</li>
-<li><code>docker compose down</code> ausführen und das alte Volume umbenennen bzw. sichern. Es bleibt als Fallback erhalten:
-<code>docker volume create n8n-local_postgres_data_pg17</code> und die Daten per <code>docker run --rm -v n8n-local_postgres_data:/from -v n8n-local_postgres_data_pg17:/to alpine:3.22 sh -c &quot;cp -a /from/. /to/&quot;</code> kopieren.</li>
-<li><code>docker volume rm n8n-local_postgres_data</code> ausführen.</li>
-<li><code>POSTGRES_VERSION</code> in <code>.env</code> anpassen. <strong>Ab PostgreSQL 18</strong> in <code>docker-compose.yml</code> <code>PGDATA</code> entfernen und das Volume auf <code>/var/lib/postgresql</code> mounten (geänderte Konvention des offiziellen Images).</li>
-<li><code>docker compose up -d postgres</code>, danach <code>.\scripts\restore.ps1 -BackupDirectory .\backups\&lt;ordner&gt; -Force</code>.</li>
-<li><code>.\scripts\health.ps1</code> ausführen und die Daten prüfen.</li>
-</ol>
-<h2 id="kontrolle-des-automatisierten-update-workflows">Kontrolle des automatisierten Update-Workflows</h2>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>Prüfung</th>
-<th>Befehl / Ort</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Workflow aktiv?</td>
-<td><code>docker exec postgres psql -U n8n -d n8n -tAc &quot;select name, active from workflow_entity where id='weeklyN8nUpdater'&quot;</code> → <code>t</code></td>
-</tr>
-<tr>
-<td>Letzte Ausführungen</td>
-<td>UI: <strong>Overview → Executions</strong> bzw. Workflow → <strong>Executions</strong></td>
-</tr>
-<tr>
-<td>Letzte Entscheidungen</td>
-<td><code>Get-Content .\logs\version-checks.jsonl -Tail 5</code></td>
-</tr>
-<tr>
-<td>Letzte Updates</td>
-<td><code>Get-Content .\logs\updates.jsonl -Tail 1 | ConvertFrom-Json</code></td>
-</tr>
-<tr>
-<td>Updater läuft?</td>
-<td><code>Invoke-RestMethod http://127.0.0.1:5680/health</code></td>
-</tr>
-<tr>
-<td>Updater-Status mit Auth</td>
-<td>siehe unten</td>
-</tr>
-<tr>
-<td>Manuell ausführen</td>
-<td><code>docker exec -e N8N_RUNNERS_BROKER_PORT=5690 n8n n8n execute --id=weeklyN8nUpdater --rawOutput</code></td>
-</tr>
-</tbody>
-</table></div>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">$token = (Select-String -Path .env -Pattern &#x27;^UPDATER_TOKEN=(.+)$&#x27;).Matches[0].Groups[1].Value
-Invoke-RestMethod http://127.0.0.1:5680/status -Headers @{ Authorization = &quot;Bearer $token&quot; } | ConvertTo-Json -Depth 5
-# Dry-Run einer Zielversion, ohne Änderung:
-Invoke-RestMethod http://127.0.0.1:5680/update -Method Post -ContentType &#x27;application/json&#x27; `
-  -Headers @{ Authorization = &quot;Bearer $token&quot; } -Body &#x27;{&quot;version&quot;:&quot;2.47.7&quot;,&quot;dryRun&quot;:true}&#x27;
-</code></pre></div>
-<p><strong>Zeitplan ändern:</strong> In der UI den Knoten „Montag 03:00 (Europe/Berlin)“ öffnen und Wochentag/Uhrzeit anpassen. Den Knoten passend umbenennen, <strong>Publish</strong> klicken und den Export <code>workflows/weekly-n8n-update.json</code> aktualisieren (Workflow-Menü → Download). Die Zeitzone kommt aus den Workflow-Einstellungen (<code>Europe/Berlin</code>) und aus <code>GENERIC_TIMEZONE</code>.</p>
-<p><strong>Rollback-Pfad testen</strong>, ohne die Version zu wechseln:</p>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">python .\updater\n8nctl.py update 2.47.7 --yes --simulate-failure
-# erwartet: status &quot;rolled-back&quot;, rollback.ok = true
-</code></pre></div>
-<p><strong>Workflow deaktivieren:</strong> <code>docker exec n8n n8n unpublish:workflow --id=weeklyN8nUpdater</code> und danach <code>docker compose restart n8n</code>.</p>
-<h2 id="fehleranalyse">Fehleranalyse</h2>
+<p>Host-Updater-Protokolle liegen unter <code>logs/</code>: <code>updater.log</code>, <code>updates.jsonl</code>, <code>version-checks.jsonl</code> und <code>update-&lt;id&gt;.out</code>. Diese Laufzeitdateien werden nicht in Git versioniert.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Symptom</th>
-<th>Ursache / Prüfung</th>
-<th>Lösung</th>
+<th>Prüfung / Maßnahme</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>docker</code> antwortet nur mit Client</td>
-<td>Docker Desktop läuft nicht</td>
-<td>Docker Desktop starten</td>
+<td>Docker zeigt nur den Client</td>
+<td>Docker Desktop bzw. den Docker-Dienst starten und <code>docker version</code> erneut prüfen</td>
 </tr>
 <tr>
-<td>n8n bleibt <code>starting</code>/<code>unhealthy</code></td>
-<td><code>docker logs n8n --tail 100</code></td>
-<td>DB-Fehler: <code>docker compose ps postgres</code> prüfen</td>
-</tr>
-<tr>
-<td><code>password authentication failed</code></td>
-<td><code>POSTGRES_PASSWORD</code> in <code>.env</code> geändert</td>
-<td>ursprüngliches Passwort wiederherstellen (aus <code>backups\*\env.backup</code>)</td>
-</tr>
-<tr>
-<td>Credentials „could not be decrypted“</td>
-<td>falscher <code>N8N_ENCRYPTION_KEY</code></td>
-<td>Key aus dem Backup (<code>env.backup</code>) wiederherstellen</td>
+<td>n8n ist unhealthy</td>
+<td><code>docker compose logs n8n</code> sowie den Healthcheck von PostgreSQL prüfen</td>
 </tr>
 <tr>
 <td>Port 5678 belegt</td>
-<td><code>netstat -ano | Select-String ':5678 '</code></td>
-<td>Fremdprozess beenden oder <code>N8N_PORT</code> ändern</td>
+<td><code>N8N_PORT</code> in <code>.env</code> ändern und mit <code>docker compose up -d</code> neu erstellen</td>
 </tr>
 <tr>
-<td>Workflow: „Installierte Version ermitteln“ schlägt fehl</td>
-<td>Updater läuft nicht / Token falsch</td>
-<td><code>Start-ScheduledTask 'n8n-local Host-Updater'</code>; Credential prüfen</td>
+<td>PostgreSQL-Authentifizierung schlägt fehl</td>
+<td>ursprüngliches <code>POSTGRES_PASSWORD</code> aus der korrespondierenden <code>.env</code>/dem Backup wiederherstellen; Änderungen der Image-Umgebungsvariablen ändern kein bestehendes Datenbankpasswort</td>
 </tr>
 <tr>
-<td>Workflow: <code>decision=blocked</code></td>
-<td>Vorabprüfung, siehe <code>reason</code></td>
-<td>z. B. Speicherplatz freigeben, Healthchecks reparieren</td>
+<td>Credentials lassen sich nicht entschlüsseln</td>
+<td>passenden <code>N8N_ENCRYPTION_KEY</code> aus <code>.env</code> oder einem Backup wiederherstellen</td>
 </tr>
 <tr>
-<td><code>updates.jsonl</code>: <code>aborted</code></td>
-<td>Backup oder Vorabprüfung fehlgeschlagen, <strong>nichts geändert</strong></td>
-<td><code>error</code> lesen, Ursache beheben</td>
-</tr>
-<tr>
-<td><code>updates.jsonl</code>: <code>rolled-back</code></td>
-<td>neue Version nicht gesund, alter Stand wiederhergestellt</td>
-<td><code>health.checks</code> lesen, Release Notes prüfen, später erneut</td>
-</tr>
-<tr>
-<td><code>updates.jsonl</code>: <code>rollback-failed</code></td>
-<td><strong>kritisch</strong></td>
-<td><code>logs\updater.log</code> lesen, manuell <code>restore.ps1</code> mit dem <code>pre-update</code>-Backup</td>
-</tr>
-<tr>
-<td>Update-Sperre hängt</td>
-<td><code>updater\state\update.lock</code> existiert ohne laufenden Prozess</td>
-<td>wird nach 3 h automatisch entfernt; sonst Datei löschen</td>
-</tr>
-<tr>
-<td><code>Task Broker's port 5679 is already in use</code> bei <code>n8n execute</code></td>
-<td>n8n läuft bereits</td>
-<td><code>-e N8N_RUNNERS_BROKER_PORT=5690</code> angeben</td>
+<td>Updater-Workflow erreicht den Host nicht</td>
+<td><code>python3 updater/n8nctl.py serve</code>, Token, Host-Firewall und OS-spezifische Hinweise prüfen; unter nativem Linux ist Loopback aus dem Container nicht erreichbar</td>
 </tr>
 </tbody>
 </table></div>
-<p>Diagnosepaket:</p>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">.\scripts\health.ps1
-docker compose ps
-docker inspect n8n --format &#x27;{{json .State.Health}}&#x27; | ConvertFrom-Json | Select-Object -ExpandProperty Log | Select-Object -Last 3
-Get-Content .\logs\updater.log -Tail 30
+<h2 id="postgresql-wartung">PostgreSQL-Wartung</h2>
+<p>PostgreSQL-Minor-Upgrades derselben Major-Version: erst Backup erstellen, <code>POSTGRES_VERSION</code> in <code>.env</code> ändern, dann:</p>
+<div class="code"><div class="code-head"><span>sh</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-sh">docker compose pull postgres
+docker compose up -d postgres
+python3 updater/n8nctl.py health
 </code></pre></div>
-<h2 id="speicherplatzverwaltung">Speicherplatzverwaltung</h2>
-<div class="code"><div class="code-head"><span>PowerShell</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-powershell">docker system df                       # Images, Container, Volumes, Build-Cache
-docker system df -v | Select-String &#x27;n8n-local&#x27;
-Get-ChildItem .\backups -Directory | ForEach-Object {
-  [pscustomobject]@{ Name = $_.Name; MB = [math]::Round((Get-ChildItem $_.FullName -Recurse | Measure-Object Length -Sum).Sum / 1MB, 1) } }
-python .\updater\n8nctl.py prune       # Aufbewahrungsregel anwenden
-docker image prune                     # ungenutzte, unbenannte Images entfernen
-docker image rm docker.n8n.io/n8nio/n8n:&lt;alte-version&gt;   # alte n8n-Images (nicht die aktuelle!)
+<p>Ein PostgreSQL-Major-Upgrade benötigt eine geplante Migration und einen getesteten Dump/Restore. Ändern Sie nicht lediglich das Image-Tag bei einem bestehenden Datenverzeichnis. Erstellen und prüfen Sie ein Backup und folgen Sie der offiziellen PostgreSQL-/Image-Dokumentation, bevor Sie die Instanz migrieren.</p>
+<h2 id="dokumentation-generieren-und-prüfen">Dokumentation generieren und prüfen</h2>
+<p>Im Projektstamm:</p>
+<div class="code"><div class="code-head"><span>sh</span><button type="button" class="copy" aria-label="Code kopieren">Kopieren</button></div><pre><code class="lang-sh">python3 docs/tools/build_docs.py
+python3 docs/tools/build_docs.py --check
 </code></pre></div>
-<ul>
-<li>Ausführungsdaten werden durch <code>EXECUTIONS_DATA_PRUNE=true</code> nach 14 Tagen (<code>EXECUTIONS_DATA_MAX_AGE=336</code> h) gelöscht.</li>
-<li>Die WSL-Disk von Docker Desktop schrumpft nicht automatisch: Docker Desktop → <strong>Settings → Resources → Disk image size</strong> bzw. <strong>Troubleshoot → Clean / Purge data</strong> (Vorsicht: „Purge“ löscht Volumes).</li>
-<li>Backup und Update verweigern den Start, wenn weniger als 2 × Volumegröße + <code>MIN_FREE_GB</code> frei ist.</li>
-</ul>
-<h2 id="wiederherstellung-nach-einem-systemausfall">Wiederherstellung nach einem Systemausfall</h2>
-<h3 id="szenario-a-docker-desktop-oder-wsl-defekt-projektordner-intakt">Szenario A: Docker Desktop oder WSL defekt, Projektordner intakt</h3>
-<ol>
-<li>Docker Desktop neu installieren (siehe <a href="installation-guide.md#2-docker-installation">Installationsanleitung</a>).</li>
-<li>Sind die Volumes noch vorhanden (<code>docker volume ls</code>), genügt <code>docker compose up -d</code>.</li>
-<li>Fehlen sie: <code>docker compose up -d postgres</code>, dann <code>.\scripts\restore.ps1 -BackupDirectory .\backups\&lt;neuestes&gt; -Force</code>.</li>
-</ol>
-<h3 id="szenario-b-neuer-rechner-nur-eine-backup-kopie-vorhanden">Szenario B: Neuer Rechner, nur eine Backup-Kopie vorhanden</h3>
-<ol>
-<li>Docker Desktop, Git und Python installieren.</li>
-<li>Projekt aus Git klonen oder kopieren (ohne <code>.env</code>).</li>
-<li>Den Backup-Ordner nach <code>backups\</code> kopieren und entschlüsseln.</li>
-<li><code>.env</code> aus dem Backup übernehmen: <code>Copy-Item .\backups\&lt;ordner&gt;\env.backup .env</code>.</li>
-<li><code>docker compose pull</code>, danach <code>docker compose up -d postgres</code>.</li>
-<li><code>.\scripts\restore.ps1 -BackupDirectory .\backups\&lt;ordner&gt; -RestoreEnv -Force</code>.</li>
-<li><code>.\scripts\install-updater-task.ps1</code>, danach <code>.\scripts\health.ps1</code>.</li>
-<li>Anmeldung in der UI mit dem bisherigen Konto. Workflows, Credentials und der Update-Workflow sind wiederhergestellt.</li>
-</ol>
-<h3 id="szenario-c-env-verloren-volumes-intakt">Szenario C: <code>.env</code> verloren, Volumes intakt</h3>
-<p><code>env.backup</code> aus dem neuesten Backup nach <code>.env</code> kopieren. Ohne Backup lässt sich der <code>N8N_ENCRYPTION_KEY</code> nur aus <code>/home/node/.n8n/config</code> im Volume <code>n8n_data</code> lesen (<code>docker run --rm -v n8n-local_n8n_data:/d alpine:3.22 cat /d/config</code>), falls n8n ihn dort gespeichert hat. Gespeicherte Credentials sind ohne Key verloren.</p>
-<h2 id="regelmäßige-wartung">Regelmäßige Wartung</h2>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>Intervall</th>
-<th>Aufgabe</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>wöchentlich (automatisch)</td>
-<td>Versionsprüfung und ggf. Update (Montag 03:00)</td>
-</tr>
-<tr>
-<td>wöchentlich</td>
-<td><code>logs\version-checks.jsonl</code> und <code>logs\updates.jsonl</code> kurz prüfen</td>
-</tr>
-<tr>
-<td>monatlich</td>
-<td><code>.\scripts\backup.ps1</code> und eine verschlüsselte Kopie außer Haus</td>
-</tr>
-<tr>
-<td>quartalsweise</td>
-<td>Restore-Test auf Testbasis; Docker Desktop aktualisieren</td>
-</tr>
-<tr>
-<td>bei Major-Release von n8n</td>
-<td>Release Notes lesen, manuell mit <code>-AllowMajor</code> aktualisieren</td>
-</tr>
-</tbody>
-</table></div>
+<p>Der Generator aktualisiert HTML und SVG aus Markdown und prüft Seitenlinks, Anker und Diagrammzuordnungen.</p>
 
 <div class="pager"><a class="prev" href="architecture.html"><small>← Zurück</small>Architektur</a></div>
-<footer class="foot">Generiert aus <code>maintenance.md</code> (SHA-256 87697cbc3634). Nicht von Hand bearbeiten – Änderungen in der Markdown-Datei vornehmen und den Generator ausführen.</footer>
+<footer class="foot">Generiert aus <code>maintenance.md</code> (SHA-256 b1b4dd7c557c). Nicht von Hand bearbeiten – Änderungen in der Markdown-Datei vornehmen und den Generator ausführen.</footer>
 </main>
 </div>
 <script>
